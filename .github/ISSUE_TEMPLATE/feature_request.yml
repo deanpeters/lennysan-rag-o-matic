@@ -1,0 +1,83 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Remember: **we get more done faster by focusing on less.** 
+        
+        Check the [roadmap](https://github.com/deanpeters/lennysan-rag-o-matic#roadmap) to see if your feature is already planned.
+
+  - type: dropdown
+    id: version-target
+    attributes:
+      label: Which version should this target?
+      description: Where does this fit in the roadmap?
+      options:
+        - v0.5 (Model Switching)
+        - v1.0 (Jupyter Support)
+        - v1.5 (Topic Organization)
+        - v2.0 (Streamlit UI)
+        - v2.5 (Second Corpus)
+        - v3.0 (Windows Support)
+        - v4.0 (Local LLMs)
+        - Future/Unplanned
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the user need or pain point
+      placeholder: "As a PM, I want to... because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you solve this?
+      placeholder: "Add a --filter flag that..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other approaches did you think about?
+      placeholder: "Could also use..."
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Is this a single-feature addition?
+      description: Each version should add ONE capability
+      options:
+        - "Yes - this is one focused feature"
+        - "No - this requires multiple features"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Does this align with project principles?
+      description: Check all that apply
+      options:
+        - label: Low barrier for non-technical PMs
+        - label: Transparent costs
+        - label: No vendor lock-in
+        - label: Ships one feature at a time
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else we should know?
+      placeholder: "Related issues, mockups, examples..."

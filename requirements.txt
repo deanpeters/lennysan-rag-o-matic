@@ -1,0 +1,22 @@
+# LennySan RAG-o-Matic v0.1 Dependencies
+# Python 3.9+ required
+
+# Vector database
+chromadb>=0.4.22
+
+# Anthropic API
+anthropic>=0.40.0
+
+# LangChain for RAG pipeline
+langchain>=0.1.0
+langchain-anthropic>=0.1.0
+langchain-community>=0.0.20
+
+# Embeddings
+sentence-transformers>=2.2.0
+
+# Progress bars for long operations
+tqdm>=4.66.0
+
+# Utilities
+pyyaml>=6.0

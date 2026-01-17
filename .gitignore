@@ -1,4 +1,47 @@
-# macOS specific
+# LennySan RAG-o-Matic - Files to ignore
+
+# Logs
+logs/
+*.log
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Vector database (generated locally)
+data/
+chroma_db/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Jupyter Notebook (for future versions)
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -11,6 +54,10 @@
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
-# External drives
-.Spotlight-V100
-.Trashes
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+tmp/
+temp/

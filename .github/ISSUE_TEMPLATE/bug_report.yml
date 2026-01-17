@@ -1,0 +1,104 @@
+name: Bug Report
+description: Report a bug or issue with LennySan RAG-o-Matic
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! This helps make the tool better for everyone.
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: Which version are you using?
+      options:
+        - v0.1 (Proof of Life)
+        - v0.5 (Model Switching)
+        - v1.0 (Jupyter Support)
+        - Other/Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What OS are you running on?
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: What Python version? (Run `python3 --version`)
+      placeholder: "e.g., Python 3.11.5"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug. What did you try to do? What went wrong?
+      placeholder: "I ran ./setup.sh and got an error..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: What should have happened instead?
+      placeholder: "I expected setup to complete successfully..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-message
+    attributes:
+      label: Error Message
+      description: Copy/paste any error messages you saw
+      placeholder: "Paste error message here..."
+      render: shell
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log Files
+      description: If setup failed, attach relevant log files from logs/ directory
+      placeholder: |
+        Paste contents of:
+        - logs/setup_YYYYMMDD_HHMMSS.log
+        - logs/index_YYYYMMDD_HHMMSS.log
+      render: shell
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How to reproduce
+      description: Steps to reproduce the bug
+      placeholder: |
+        1. Clone repo
+        2. Run ./setup.sh
+        3. See error...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checks
+      description: Have you checked these common issues?
+      options:
+        - label: I have ANTHROPIC_API_KEY set in my environment
+        - label: I'm using Python 3.9 or higher
+        - label: I ran `chmod +x setup.sh` to make it executable
+        - label: I searched existing issues and this isn't a duplicate

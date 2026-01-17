@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussion Forum
+    url: https://github.com/deanpeters/lennysan-rag-o-matic/discussions
+    about: Ask questions, share ideas, or discuss the project with the community
+  - name: Original Transcript Repo
+    url: https://github.com/ChatPRD/lennys-podcast-transcripts
+    about: Issues with the transcript content itself should go to the original repo

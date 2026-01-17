@@ -1,144 +1,284 @@
-# Lenny's Podcast Transcripts Archive
+# LennySan RAG-o-Matic
+  _                                  ____
+ | |    ___ _ __  _ __  _   _       / ___|  __ _ _ __
+ | |   / _ \ '_ \| '_ \| | | |_____ \___ \ / _` | '_ \
+ | |__|  __/ | | | | | | |_| |_____| ___) | (_| | | | |
+ |_____\___|_| |_|_| |_|\__, |      |____/ \__,_|_| |_|
+                        |___/
+  ____      _    ____               __  __       _   _
+ |  _ \    / \  / ___|___          |  \/  | __ _| |_(_) ___
+ | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
+ |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
+ |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
+                                                       v0.1
+                                                       
+A low-barrier PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG (Retrieval Augmented Generation).
 
-A comprehensive archive of transcripts from [Lenny's Podcast](https://www.youtube.com/@LennysPodcast), organized for easy use with AI coding assistants and language models.
+## What This Does
 
-## About Lenny's Podcast
+Stop rebuilding Claude Projects or Gemini Gems every time you want to explore a PM topic. Clone this once, run it locally, and query Lenny's entire podcast corpus with your choice of LLM.
 
-Lenny's Podcast features interviews with world-class product leaders and growth experts, providing concrete, actionable, and tactical advice to help you build, launch, and grow your own product.
+**Use cases:**
+- Research pricing strategies across 50+ episodes
+- Compare AI product management perspectives
+- Extract frameworks for enterprise sales
+- Find real-world examples for specific PM challenges
+- Build topic-specific notebooks for your own learning
 
-## Quick Start
+No cloud accounts, no recurring costs beyond LLM API calls (typically pennies per query).
 
-**Browse by topic:** Start with [index/README.md](index/README.md) to explore episodes by topic.
+## Who This Is For
 
-**Search transcripts:**
-```bash
-grep -r "product-market fit" episodes/
+Product managers comfortable with:
+- Forking and cloning GitHub repos
+- Setting environment variables
+- Running command-line tools
+
+If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No shame - different tools for different comfort levels.
+
+## Current Status: v0.1 (Proof of Life)
+
+**What works right now:**
+- CLI query tool
+- Lenny corpus indexed in ChromaDB
+- Claude Haiku API integration (cheapest model for testing)
+- Mac only
+
+**What this is NOT yet:**
+- Not model switching (v0.5)
+- Not Jupyter notebooks (v1.0)
+- Not topic organization (v1.5)
+- Not Streamlit UI (v2.0)
+- Not multiple corpuses (v2.5)
+- Not Windows compatible (v3.0)
+- Not local LLMs (v4.0)
+
+This is a weekend build to prove the RAG concept works. Expect rough edges.
+
+## How It Works
+
+LennySan RAG-o-Matic consists of three key components that work together:
+
+### 1. **setup.sh** - One-Command Setup
+Your entry point. Runs preflight checks, creates a Python virtual environment, installs dependencies, and orchestrates the indexing process. Run it once, then you're ready to explore.
+
+### 2. **index_corpus.py** - Smart Indexing
+Processes all 320 episodes and their rich metadata into a searchable vector database. Here's what makes it special:
+
+**Preserves Claire Vo's Metadata**: Each transcript includes YAML frontmatter with:
+- Guest name and episode title
+- Publication date
+- Keywords (pricing, growth, leadership, etc.)
+- Duration, view count, and YouTube links
+
+Rather than treating this as plain text, we parse and preserve it. This means every chunk in the database knows which episode it came from, who the guest was, when it was published, and what topics it covers.
+
+**Why this matters**: You don't just get an answer—you get attribution. Know which episode, guest, and date the insights came from. This builds trust and lets you dig deeper.
+
+### 3. **explore.py** - CLI Query Tool
+Your research interface. Ask questions in natural language, get AI-synthesized answers from the corpus, with full source attribution showing guest, title, date, and YouTube link.
+
+Example output:
+```
+💡 Answer:
+Lenny discusses several pricing strategies including value-based pricing...
+
+📚 Sources:
+• Madhavan Ramanujam: "The 1 thing that most gets in the way..." (2023-05-15)
+  https://www.youtube.com/watch?v=xyz
 ```
 
-## Repository Structure
+**The RAG Pipeline**: Your query → Vector search finds relevant chunks → Claude synthesizes an answer → You get insights with sources.
+
+### Bonus: Topic Index (Inherited from Original Repo)
+
+The fork includes an `index/` directory with 80+ topic files (`pricing.md`, `growth-strategy.md`, etc.) containing AI-generated episode tags. This is a **complementary resource** to the RAG system:
+
+- **RAG system** (our addition): Ask natural language questions, get synthesized answers
+- **Topic index** (from original repo): Browse episodes by keyword tag
+
+Use both! The topic files are great for discovering episodes, while the RAG system is great for extracting insights across episodes.
+
+## Prerequisites
+
+**Required for v0.1:**
+- GitHub account (you're here, so ✓)
+- [Anthropic API key](https://console.anthropic.com/) (Claude only for now)
+- Python 3.9 or higher
+- Git
+
+**Recommended:**
+- **Mac**: [Homebrew](https://brew.sh) for managing dependencies
+
+## Getting Started
+
+### Forking and Cloning
+
+This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts) repository. If you want to create your own fork and keep it synced with updates, see [GITLENNY.md](GITLENNY.md) for detailed instructions.
+
+**Quick start (use this fork as-is):**
+
+1. **Clone this repo:**
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/lennysan-rag-o-matic
+   cd lennysan-rag-o-matic
+   ```
+
+2. **Set your Anthropic API key:**
+   ```bash
+   # Add to ~/.bashrc or ~/.zshrc
+   export ANTHROPIC_API_KEY='sk-ant-...'
+   
+   # Reload your shell
+   source ~/.bashrc  # or source ~/.zshrc
+   ```
+
+3. **Run setup:**
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+   This will:
+   - Check prerequisites
+   - Install Python dependencies
+   - Index transcripts in ChromaDB (one-time, ~5-10 minutes)
+
+4. **Ask a question:**
+   ```bash
+   python explore.py "What does Lenny say about pricing?"
+   ```
+
+That's it. You now have 320 episodes searchable from your command line.
+
+## Cost Expectations (v0.1)
+
+- **Setup**: One-time embedding costs (~$0.50-2)
+- **Queries**: ~$0.001-0.005 per question (using Claude Haiku)
+- **Local storage**: ~500MB for vector database
+
+We're using the cheapest Claude model (Haiku) for v0.1 testing. Better models come in v0.5+.
+
+## Roadmap
+
+Each version adds ONE focused capability. We ship fast by staying narrow.
+
+**v0.1 - Proof of Life** ✅ Current
+- CLI works with Claude Haiku
+- That's it
+
+**v0.5 - Model Switching**
+- Add `--model` flag
+- Support Claude Sonnet 4 and GPT-4
+- One feature: choose your model
+
+**v1.0 - Jupyter Support**
+- Jupyter notebooks work
+- One example notebook included
+- One feature: interactive exploration
+
+**v1.5 - Topic Organization**
+- Topic directory structure
+- 3-4 example topic notebooks (pricing, growth, AI, enterprise)
+- One feature: organized research
+
+**v2.0 - Streamlit UI**
+- Basic web interface
+- Point-and-click queries
+- One feature: visual interface
+
+**v2.5 - Second Corpus**
+- Multi-corpus architecture
+- Add one more source (Productside or community choice)
+- One feature: compare across sources
+
+**v3.0 - Windows Support**
+- Cross-platform setup.bat
+- Windows testing
+- One feature: works everywhere
+
+**v4.0 - Local LLMs** (Major release)
+- LlamaFarm integration
+- Fully offline operation
+- One feature: no API costs
+
+## What Gets Set Up (v0.1)
 
 ```
-├── episodes/                    # 269 episode transcripts
-│   └── {guest-name}/
-│       └── transcript.md
-├── index/                       # AI-generated topic index
-│   ├── README.md                # Main entry point
-│   ├── product-management.md    # Episodes about product management
-│   ├── leadership.md            # Episodes about leadership
-│   └── ...                      # 50+ topic files
-└── scripts/
-    └── build-index.sh           # Script to regenerate index
+lennysan-rag-o-matic/
+├── episodes/               # Lenny's transcripts (already here)
+├── data/
+│   └── chroma_db/         # Your local vector database (created by setup)
+├── logs/                  # Setup and indexing logs (created by setup)
+├── explore.py             # CLI tool
+├── index_corpus.py        # Indexing script
+├── setup.sh              # Setup script
+├── requirements.txt       # Python dependencies
+└── README.md
 ```
 
-## Episode Format
+More structure added in later versions.
 
-Each episode has its own folder named after the guest(s), containing a `transcript.md` file with:
+## Troubleshooting
 
-1. **YAML Frontmatter** - Structured metadata including:
-   - `guest`: Name of the guest(s)
-   - `title`: Full episode title
-   - `youtube_url`: Link to the YouTube video
-   - `video_id`: YouTube video ID
-   - `publish_date`: Publication date (YYYY-MM-DD)
-   - `description`: Episode description
-   - `duration_seconds`: Episode length in seconds
-   - `duration`: Human-readable duration
-   - `view_count`: Number of views at time of archival
-   - `channel`: Channel name
+**"No ANTHROPIC_API_KEY found"**
+- Check if it's set: `printenv ANTHROPIC_API_KEY > /dev/null && echo "✅ It exists" || echo "❌ Not set"`
+- Add to your shell profile (`~/.bashrc` or `~/.zshrc`):
+  ```bash
+  export ANTHROPIC_API_KEY='sk-ant-...'
+  ```
+- Reload shell: `source ~/.bashrc` or `source ~/.zshrc`
+- Or just edit `~/.zshrc` directly and restart terminal
 
-2. **Transcript Content** - Full text transcript of the episode
+**"Command not found: python"**
+- Try `python3` instead
+- Or install Python 3.9+ from python.org
 
-## Topic Index
+**"Setup fails on dependencies"**
+- Make sure you're using Python 3.9 or higher: `python3 --version`
+- Try: `pip install --upgrade pip` then rerun setup
 
-The `index/` folder contains AI-generated keyword tags for each episode, organized by topic:
+**"Permission denied: ./setup.sh"**
+- Make it executable: `chmod +x setup.sh`
 
-| Topic | Description |
-|-------|-------------|
-| [Product Management](index/product-management.md) | 57+ episodes on PM skills and practices |
-| [Leadership](index/leadership.md) | Episodes on management and leadership |
-| [Growth Strategy](index/growth-strategy.md) | Growth tactics and frameworks |
-| [Product-Market Fit](index/product-market-fit.md) | Finding and measuring PMF |
+**"Setup failed but I don't know why"**
+- Check the logs: `logs/setup_YYYYMMDD_HHMMSS.log`
+- Check the indexing logs: `logs/index_YYYYMMDD_HHMMSS.log`
+- Logs contain full error details and stack traces
 
-See [index/README.md](index/README.md) for the complete list of 50 topics.
+**Something else broken?**
+- Open an issue with your error message
+- Include OS version and Python version
 
-## Rebuilding the Index
+## Credits
 
-The index is generated using Claude CLI. To regenerate:
-
-```bash
-./scripts/build-index.sh
-```
-
-This processes transcripts through Claude to generate keyword tags. The script is idempotent - it skips episodes already present in keyword files, so it can be run multiple times safely.
-
-## Usage with AI
-
-### Loading Transcripts
-
-Each transcript is a standalone markdown file that can be easily parsed by AI systems. The YAML frontmatter provides structured metadata that can be extracted programmatically.
-
-### Example: Reading a Transcript
-
-```python
-import yaml
-
-def read_transcript(filepath):
-    with open(filepath, 'r') as f:
-        content = f.read()
-
-    # Split frontmatter and content
-    parts = content.split('---')
-    if len(parts) >= 3:
-        frontmatter = yaml.safe_load(parts[1])
-        transcript = '---'.join(parts[2:])
-        return frontmatter, transcript
-    return None, content
-
-# Example usage
-metadata, transcript = read_transcript('episodes/brian-chesky/transcript.md')
-print(f"Guest: {metadata['guest']}")
-print(f"Title: {metadata['title']}")
-```
-
-## Episode Count
-
-This archive contains **269 transcripts** from Lenny's Podcast episodes.
-
-## Data Sources
-
-- **Transcripts**: Sourced from the Lenny's Podcast Transcripts Archive
-- **Metadata**: Extracted from the [Lenny's Podcast YouTube channel](https://www.youtube.com/@LennysPodcast)
-
-## Contributing
-
-If you notice any issues with the transcripts or metadata, please open an issue or submit a pull request.
-
-## Projects Built with These Transcripts
-
-Here are some projects that have been built using this transcript archive:
-
-**[Learn from Lenny](https://x.com/learnfromlenny)** by [@IamAdiG](https://x.com/IamAdiG) - An AI agent on X that provides credible product advice based on Lenny's podcasts. Tag it to get spot-on advice with no fluff.
-
-**[Lenny Skills Database](https://refoundai.com/lenny-skills/)** by Refound AI - A searchable database of 86 actionable skills extracted from 297 podcast episodes. Learn how the best product teams actually work.
-
-**[Lenny MCP](https://github.com/akshayvkt/lenny-mcp)** by [Akshay Chintalapati](https://x.com/akshayvkt) - A Model Context Protocol server that provides access to Lenny's podcast content for AI applications.
-
-**[Recapio - Lenny's Podcast Summaries](https://recapio.com/channel/lennyspodcast)** - AI-generated summaries, transcripts, key insights, and chat interface for Lenny's Podcast episodes.
-
-**[Lenny's Frameworks](https://lennys-frameworks.vercel.app/)** - A collection of frameworks and mental models extracted from Lenny's Podcast episodes.
-
-**[Lenny Listens](https://lenny-listens.vercel.app/)** - An interactive tool for exploring and searching Lenny's Podcast content.
-
-**[Lenny's Advice Arena](https://lennysadvicearena.lovable.app/)** - An interactive experience for exploring product advice from Lenny's Podcast.
-
-**[Lenny Gallery](https://lennygallery.manus.space/)** by Alan Chan - An infographic gallery with visual summaries of key episodes, built with Manus AI.
-
-Have you built something with these transcripts? Open a PR to add your project to this list!
-
-## Disclaimer
-
-This archive is for educational and research purposes. All content belongs to Lenny's Podcast and the respective guests. Please visit the official YouTube channel to support the creators.
+- **Lenny Rachitsky** for 320+ episodes of PM wisdom
+- **Claire Vo** ([@clairevo](https://twitter.com/clairevo)) for creating and open-sourcing the transcript corpus, including the rich YAML metadata (guest, title, date, keywords) that makes smart attribution possible
+- Original transcript repo: [ChatPRD/lennys-podcast-transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts)
 
 ## License
 
-The transcripts are provided for personal and educational use. Please respect the original content creators' rights.
+MIT License - same as the source transcript corpus. Fork it, extend it, learn from it.
+
+## Contributing
+
+**v0.1 contributions welcome:**
+- Bug fixes
+- Better error messages
+- Mac compatibility improvements
+
+**Future versions seeking help:**
+- v0.5+: Additional LLM provider integrations
+- v1.0+: Jupyter notebook examples
+- v2.5+: Additional corpus sources
+- v3.0: Windows setup.bat and testing
+
+Open issues to discuss before submitting PRs. We ship one feature at a time.
+
+## Support
+
+This is a community tool built in spare time. No official support, but:
+- Open issues for bugs
+- Discussions for questions
+- PRs for improvements
+
+Built by PMs, for PMs. We get more done faster by focusing on less.

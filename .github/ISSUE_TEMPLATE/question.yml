@@ -1,0 +1,79 @@
+name: Question / Help
+description: Ask a question or get help using the tool
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help? We're here to support you! 
+        
+        **Quick checks first:**
+        - Check the [README](https://github.com/deanpeters/lennysan-rag-o-matic#readme) and [Troubleshooting section](https://github.com/deanpeters/lennysan-rag-o-matic#troubleshooting)
+        - Search [existing issues](https://github.com/deanpeters/lennysan-rag-o-matic/issues) for similar questions
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Setup / Installation
+        - Using the CLI (explore.py)
+        - Understanding the results
+        - API keys and costs
+        - Extending or customizing
+        - Contributing
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What do you need help with?
+      placeholder: "How do I...?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What have you already tried? Any error messages?
+      placeholder: |
+        - I tried running...
+        - I got this error...
+        - I'm using macOS 14...
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: Which version are you using?
+      options:
+        - v0.1 (Proof of Life)
+        - v0.5 (Model Switching)
+        - v1.0 (Jupyter Support)
+        - Other/Unknown
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: tried
+    attributes:
+      label: What have you already tried?
+      description: Check all that apply
+      options:
+        - label: Read the README
+        - label: Checked Troubleshooting section
+        - label: Searched existing issues
+        - label: Verified my API key is set
+        - label: Verified Python 3.9+ is installed
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Anything else that might help us answer your question?
