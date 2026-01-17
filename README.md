@@ -117,7 +117,7 @@ If you notice any issues with the transcripts or metadata, please open an issue 
 
 Here are some projects that have been built using this transcript archive:
 
-**[Learn from Lenny](https://x.com/learnfromlenny)** - An AI agent on X that provides credible product advice based on Lenny's podcasts. Tag it to get spot-on advice with no fluff.
+**[Learn from Lenny](https://x.com/learnfromlenny)** by [@IamAdiG](https://x.com/IamAdiG) - An AI agent on X that provides credible product advice based on Lenny's podcasts. Tag it to get spot-on advice with no fluff.
 
 **[Lenny Skills Database](https://refoundai.com/lenny-skills/)** by Refound AI - A searchable database of 86 actionable skills extracted from 297 podcast episodes. Learn how the best product teams actually work.
 
