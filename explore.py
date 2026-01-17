@@ -6,17 +6,25 @@ Simple CLI for querying Lenny's podcast corpus with metadata attribution
 
 import sys
 import os
+import warnings
+
+# Suppress LangChain deprecation warnings for v0.1
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+warnings.filterwarnings('ignore', message='.*was deprecated.*')
+
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_anthropic import ChatAnthropic
-from langchain.chains import RetrievalQA
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 
-def format_sources(source_documents):
+def format_sources(docs):
     """Format source documents with metadata into readable citations."""
     sources = []
     seen_episodes = set()
     
-    for doc in source_documents:
+    for doc in docs:
         metadata = doc.metadata
         guest = metadata.get('guest', 'Unknown')
         title = metadata.get('title', 'Untitled')
@@ -34,6 +42,11 @@ def format_sources(source_documents):
             sources.append(citation)
     
     return "\n".join(sources[:3])  # Show top 3 sources
+
+
+def format_docs(docs):
+    """Format documents for context."""
+    return "\n\n".join(doc.page_content for doc in docs)
 
 
 def main():
@@ -85,37 +98,56 @@ def main():
             embedding_function=embeddings
         )
         
+        # Create retriever
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        
         # Use Claude Haiku for v0.1 (cheap testing)
         llm = ChatAnthropic(
             model="claude-haiku-4-5-20251001",
             temperature=0
         )
         
-        # Create QA chain with source documents returned
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            chain_type="stuff",
-            retriever=vectorstore.as_retriever(
-                search_kwargs={"k": 5}  # Retrieve top 5 relevant chunks
-            ),
-            return_source_documents=True
+        # Create prompt template
+        template = """You are a helpful assistant answering questions about Lenny Rachitsky's podcast.
+Use the following context from podcast transcripts to answer the question.
+If you don't know the answer based on the context, just say so - don't make things up.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+        
+        prompt = ChatPromptTemplate.from_template(template)
+        
+        # Build RAG chain
+        rag_chain = (
+            {"context": retriever | format_docs, "question": RunnablePassthrough()}
+            | prompt
+            | llm
+            | StrOutputParser()
         )
         
-        # Get answer with sources
         print("🤔 Thinking...")
-        result = qa_chain.invoke({"query": query})
+        
+        # Get answer
+        answer = rag_chain.invoke(query)
+        
+        # Get source documents for attribution
+        source_docs = retriever.invoke(query)
         
         print()
         print("💡 Answer:")
         print("-" * 50)
-        print(result["result"])
+        print(answer)
         print("-" * 50)
         print()
         
         # Show sources with metadata
-        if result.get("source_documents"):
+        if source_docs:
             print("📚 Sources:")
-            print(format_sources(result["source_documents"]))
+            print(format_sources(source_docs))
             print()
         
         print("ℹ️  Using Claude Haiku (v0.1 proof of life)")

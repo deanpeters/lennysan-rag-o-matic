@@ -160,6 +160,12 @@ lennysan-rag-o-matic/
 - Support: claude-haiku, claude-sonnet-4, gpt-4
 - Single feature: choose your model
 
+**v0.75 - Web Search Fallback** (New!)
+- Add `--web-fallback` flag
+- If RAG returns "I don't have information...", trigger web search
+- Combine corpus insights with current web info
+- Single feature: handle queries outside corpus scope
+
 **v1.0 - Jupyter Support**
 - Add Jupyter to requirements.txt
 - Create one example notebook
@@ -169,6 +175,13 @@ lennysan-rag-o-matic/
 - Create topics/ directory structure
 - Add 3-4 example notebooks (pricing, growth, AI, enterprise)
 - Single feature: organized research
+
+**v1.7 - Corpus Sync**
+- Create `sync_corpus.sh` script
+- Check ChatPRD upstream for new episodes since last sync
+- Only re-index new episodes (incremental)
+- Track sync state in `.sync_state` file
+- Single feature: stay current with new episodes
 
 **v2.0 - Streamlit UI**
 - Add streamlit to requirements.txt
@@ -243,6 +256,69 @@ The groundwork is already there. You need to:
 - Multiple notebooks (that's v1.5)
 - Topic organization (that's v1.5)
 - Fancy visualizations
+
+### For v1.7 (Corpus Sync)
+
+**The Problem**: New Lenny episodes get added to ChatPRD repo regularly. Users need an easy way to stay current.
+
+**The Solution**: Create `sync_corpus.sh` script that:
+
+1. **Fetches upstream changes**:
+   ```bash
+   git fetch upstream
+   git merge upstream/main
+   ```
+
+2. **Detects new episodes**:
+   - Compare current episode count vs last sync
+   - List new transcript files
+   - Store sync state in `.sync_state` (gitignored)
+
+3. **Incremental indexing**:
+   - Only process new episodes (not entire corpus)
+   - Use ChromaDB's `add_documents()` method
+   - Append to existing vector store
+
+4. **Usage**:
+   ```bash
+   ./sync_corpus.sh
+   # Output: "Found 3 new episodes. Re-indexing... Done!"
+   ```
+
+**Do NOT add:**
+- Cron automation (let users decide when to sync)
+- Complex state management (keep it simple)
+- Auto-sync on query (too expensive)
+
+**Key insight**: Incremental indexing is WAY faster than full re-index (~30 seconds vs 5-10 minutes).
+
+### For v2.1 (Google Colab)
+
+1. Create `colab_setup.ipynb` notebook
+2. Handle Colab-specific quirks:
+   - No persistent storage (mount Google Drive)
+   - No local file system (clone repo in Colab)
+   - API keys via Colab secrets
+3. Test on free Colab tier
+4. Update README with Colab badge
+
+**Do NOT add:**
+- Pro/Pro+ specific features
+- GPU requirements (CPU embeddings are fine)
+
+### For v2.6 (Obsidian Export)
+
+1. Add `--export-obsidian` flag to explore.py
+2. After query, write to `~/Documents/Obsidian/LennyRAG/`:
+   - File per query: `YYYY-MM-DD-query-slug.md`
+   - Include: question, answer, sources with wiki-links
+   - Format: Obsidian markdown (wiki-links, tags)
+3. Detect Obsidian vault location (configurable)
+
+**Do NOT add:**
+- Notion export (that's different)
+- Bi-directional sync (overkill)
+- Obsidian plugin (separate project)
 
 ### General Guidelines for All Versions
 

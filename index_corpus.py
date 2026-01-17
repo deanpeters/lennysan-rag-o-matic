@@ -12,8 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
 from tqdm import tqdm
-from langchain.schema import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
@@ -49,7 +49,23 @@ def load_transcript_with_metadata(file_path: str) -> tuple[str, Dict[str, Any]]:
         if len(parts) >= 3:
             frontmatter = yaml.safe_load(parts[1])
             transcript_text = parts[2].strip()
-            return transcript_text, frontmatter
+            
+            # Convert all metadata values to strings or basic types for ChromaDB
+            # ChromaDB only accepts: str, int, float, bool, or None
+            cleaned_metadata = {}
+            for key, value in frontmatter.items():
+                if value is None:
+                    cleaned_metadata[key] = None
+                elif isinstance(value, (str, int, float, bool)):
+                    cleaned_metadata[key] = value
+                elif isinstance(value, list):
+                    # Convert lists to comma-separated strings
+                    cleaned_metadata[key] = ', '.join(str(v) for v in value)
+                else:
+                    # Convert everything else (dates, etc.) to strings
+                    cleaned_metadata[key] = str(value)
+            
+            return transcript_text, cleaned_metadata
     
     # No frontmatter found
     return content, {}
@@ -169,7 +185,7 @@ def main():
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={'device': 'cpu'},
-        encode_kwargs={'show_progress_bar': True, 'batch_size': 32}
+        encode_kwargs={'batch_size': 32}  # Removed show_progress_bar - causes conflict
     )
     print("✅ Embedding model loaded")
     print()

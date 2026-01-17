@@ -13,6 +13,9 @@ env/
 data/
 chroma_db/
 
+# Sync state (for v1.7+)
+.sync_state
+
 # Python
 __pycache__/
 *.py[cod]
@@ -30,9 +33,12 @@ dist/
 .ipynb_checkpoints/
 *.ipynb
 
-# Environment variables
+# Environment variables and API keys
 .env
 .env.local
+.env.*
+api_keys.txt
+*.key
 
 # IDE
 .vscode/
@@ -54,10 +60,15 @@ dist/
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
-# Logs
-*.log
-
 # Temporary files
 *.tmp
 tmp/
 temp/
+
+# Claude Desktop / Claude Code artifacts
+.claude/
+.anthropic/
+
+# User-specific config (if we add in future versions)
+config.local.yml
+config.local.json

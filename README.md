@@ -11,7 +11,7 @@
  |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
  |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
                                                        v0.1
-                                                       
+
 A low-barrier PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG (Retrieval Augmented Generation).
 
 ## What This Does
@@ -128,7 +128,7 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    ```bash
    # Add to ~/.bashrc or ~/.zshrc
    export ANTHROPIC_API_KEY='sk-ant-...'
-   
+
    # Reload your shell
    source ~/.bashrc  # or source ~/.zshrc
    ```
@@ -158,18 +158,37 @@ That's it. You now have 320 episodes searchable from your command line.
 
 We're using the cheapest Claude model (Haiku) for v0.1 testing. Better models come in v0.5+.
 
-## Roadmap
+## Tactical Roadmap
 
 Each version adds ONE focused capability. We ship fast by staying narrow.
 
+**v0.01 - Get Started**
+- Inspired by Lenny Rachitsky with grattitude
+- Facilitated by Clari Vo's generosity
+- Git the repo (SEE GITLENNY.md) & rename
+- publish deanpeters/lennysan-rag-o-matic
+
 **v0.1 - Proof of Life** ✅ Current
+- at about 1:00 AM, start dictating ideas via Claude mobile app
+- at about 2:00 PM, go upstairs, and beat on poor Claude Desktop to get sh!t working
+- by 4:00 AM ET, we're wrapping up
 - CLI works with Claude Haiku
-- That's it
+- consume 20% of weekly usage limits
+- Now to sleeep
 
 **v0.5 - Model Switching**
 - Add `--model` flag
 - Support Claude Sonnet 4 and GPT-4
 - One feature: choose your model
+
+**v0.6 - Coding Tool Switching**
+- Test out using Codex to burn less Claude tokens
+- Test out using Antigravity because I'm curious that way
+
+**v0.75 - Web Search Fallback**
+- Add `--web-fallback` flag  
+- If corpus lacks info, search the web
+- One feature: handle out-of-scope queries
 
 **v1.0 - Jupyter Support**
 - Jupyter notebooks work
@@ -181,15 +200,35 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - 3-4 example topic notebooks (pricing, growth, AI, enterprise)
 - One feature: organized research
 
+**v1.7 - Corpus Sync**
+- Inspired by Clair Vo's awesome ChatPRD/lennys-podcast-transcripts repo
+- Script to sync with ChatPRD upstream repo
+- Detect new episodes since last sync
+- Incremental re-indexing (only new content)
+- One feature: stay up-to-date with new episodes
+
 **v2.0 - Streamlit UI**
+- Inspired by Kenny at Productside
 - Basic web interface
 - Point-and-click queries
 - One feature: visual interface
+
+**v2.1 - Google Colab Support**
+- Inspired by a Productside Webinar
+- Colab-compatible setup notebook
+- No local installation needed
+- One feature: run in browser
 
 **v2.5 - Second Corpus**
 - Multi-corpus architecture
 - Add one more source (Productside or community choice)
 - One feature: compare across sources
+
+**v2.6 - Obsidian Export**
+- Inspired by a recent Teresa Torres podcast
+- Export findings to Obsidian markdown format
+- Preserve links and metadata
+- One feature: integrate with personal knowledge base
 
 **v3.0 - Windows Support**
 - Cross-platform setup.bat
