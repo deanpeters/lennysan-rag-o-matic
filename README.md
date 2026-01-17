@@ -373,7 +373,8 @@ MIT License - same as the source transcript corpus. Fork it, extend it, learn fr
 - Mac compatibility improvements
 
 **Future versions seeking help:**
-- v0.5+: Additional LLM provider integrations
+- v0.6+: CONFIGS.yaml design and implementation
+- v0.75+: Web search fallback behavior and guardrails
 - v1.0+: Jupyter notebook examples
 - v2.5+: Additional corpus sources
 - v3.0: Windows setup.bat and testing
