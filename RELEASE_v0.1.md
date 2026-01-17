@@ -1,6 +1,6 @@
 # v0.1 - Proof of Life 🎉
 
-**Release Date:** January 17, 2026  
+**Release Date:** January 17, 2026
 **Status:** Mac-only, CLI-only, Claude Haiku only
 
 First working version! Query 303 Lenny podcast episodes from your terminal with AI-powered answers and source attribution.
@@ -24,9 +24,12 @@ First working version! Query 303 Lenny podcast episodes from your terminal with 
 - **Platform**: Mac only (v0.1)
 
 ### 💰 Cost Breakdown
-- **Setup**: One-time, 5-10 minutes, ~$0 (local embeddings)
-- **Per Query**: ~$0.001-0.005 (Claude Haiku)
-- **Storage**: ~500MB local disk
+
+**Actual measured costs:**
+- Setup: $0.00 (local embeddings)
+- Per query: $0.0014 (measured)
+- 5 test queries: $0.007 total
+- Development: $0.16 (entire project)
 
 ## Example Queries
 
@@ -56,7 +59,7 @@ deactivate
 --------------------------------------------------
 Based on the context provided, here's what Lenny says about pricing:
 
-1. **Pricing deserves dedicated focus**: Lenny mentions that pricing 
+1. **Pricing deserves dedicated focus**: Lenny mentions that pricing
    could warrant "a whole podcast on its own"...
 --------------------------------------------------
 

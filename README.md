@@ -30,6 +30,17 @@ Stop rebuilding Claude Projects or Gemini Gems every time you want to explore a 
 
 No cloud accounts, no recurring costs beyond LLM API calls (typically pennies per query).
 
+## Behind the Scenes
+
+**Want to see how this was built?** Check out [`deannotes/SESSION.0.1.STORY.md`](deannotes/SESSION.0.1.STORY.md) - the complete narrative of building v0.1 in 3 hours 40 minutes (1 AM to 4:40 AM). Includes:
+- Real problems and solutions (LangChain hell, ChromaDB types, progress bars)
+- PM instincts in action (security, debugging, UX, cost transparency)
+- Actual measured costs ($0.16 + 20% of weekly Claude Pro limits)
+- Why metadata preservation matters
+- The brutal truth about platform limits
+
+More articles coming as we ship each version.
+
 ## Who This Is For
 
 Product managers comfortable with:
@@ -165,9 +176,15 @@ That's it. You now have 320 episodes searchable from your command line.
 
 ## Cost Expectations (v0.1)
 
-- **Setup**: One-time embedding costs (~$0.50-2)
-- **Queries**: ~$0.001-0.005 per question (using Claude Haiku)
-- **Local storage**: ~500MB for vector database
+**Actual measured costs:**
+- **Setup**: $0 (local embeddings, no API calls)
+- **Per query**: $0.0014 (measured from 5 test queries)
+- **Local storage**: ~500MB
+
+**Example usage:**
+- 100 queries: $0.14
+- 1,000 queries: $1.40
+- Compare to ChatGPT Plus ($20/month) or Claude Pro ($20/month)
 
 We're using the cheapest Claude model (Haiku) for v0.1 testing. Better models come in v0.5+.
 
@@ -199,7 +216,7 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - Test out using Antigravity because I'm curious that way
 
 **v0.75 - Web Search Fallback**
-- Add `--web-fallback` flag  
+- Add `--web-fallback` flag
 - If corpus lacks info, search the web
 - One feature: handle out-of-scope queries
 
@@ -254,10 +271,12 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - One feature: no API costs
 
 ## What Gets Set Up (v0.1)
-
 ```
 lennysan-rag-o-matic/
 ├── episodes/               # Lenny's transcripts (already here)
+├── deannotes/              # Dean's articles and build stories
+│   ├── README.md          # Article index
+│   └── SESSION.0.1.STORY.md  # How v0.1 was built (1 AM - 4:40 AM)
 ├── data/
 │   └── chroma_db/         # Your local vector database (created by setup)
 ├── logs/                  # Setup and indexing logs (created by setup)
