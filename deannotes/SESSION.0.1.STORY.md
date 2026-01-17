@@ -1,366 +1,588 @@
-# How I Built a RAG System in One Night (Using Claude as My Co-Pilot)
+# Weekend at Lenny’s v0.1
 
-*A case study in progressive AI collaboration: From concept on mobile to shipped code via CLI*
+## A PM Code Crawl to a Proof-of-Life
 
-## The Setup
+**TL;DR:** I took Lenny’s transcript corpus + Claire Vo’s markdown structure and, over one sleep-ruining night, built a tiny local RAG “Proof of Life” so non-programmer PMs can query the corpus with Claude Desktop / ChatGPT Desktop today: and hand it off to Claude Code / Codex next.
 
-It's 1 AM. I'm lying in bed, thinking about Lenny Rachitsky's podcast corpus. 
+It’s Friday night. It's 1:20 AM and I wake up in the middle of the night because, well, I'm older than dirt.
 
-Three hundred twenty episodes. Thousands of insights about pricing, growth, product-market fit, enterprise sales. All locked up in transcripts that are a pain in the ass to search through.
+The house is quiet in that *too-quiet* way: like it’s watching you.
 
-ChatPRD already did the hard work—they transcribed everything, Claire Vo enriched it with metadata. But I still have to rebuild my context in Claude Projects every time I want to explore a topic. That's annoying.
+Somewhere in the distance a refrigerator hums like it’s plotting.
 
-What if I could just... query it? Command line. Local. My terms.
+And on my nightstand, my phone is glowing with the kind of temptation that has wrecked more weekends than tequila:
 
-I pull out my phone and start a conversation with Claude.
+> “A clean, beautifully structured transcript corpus… just sitting on GitHub.”
 
-## Act One: Concept (On My Phone)
+All week I’d been side-eyeing it.
 
-**Me:** "I want to build a RAG tool for Lenny's podcast corpus. Fork the ChatPRD repo, add ChromaDB, CLI query tool. Call it LennySan RAG-o-Matic. What's the simplest possible v0.1?"
+The way you side-eye a suspiciously cheap “AI Strategy” workshop.
 
-This is key: I'm not asking Claude to build it. I'm asking it to help me *think* about building it.
+The way you side-eye a backlog that claims it’s “prioritized.”
 
-Claude comes back with: "Proof of life. One CLI tool. Claude Haiku. Mac only. Ship ONE feature: make queries work."
+Because I knew what it *really* was:
 
-Yes. This is the discipline. No Jupyter notebooks. No Streamlit UI. No model switching. Just get the damn thing working.
+- 300+ episodes of product wisdom
+- pre-packaged into markdown
+- with metadata that actually lets you *trust* what you’re reading
 
-We sketch out a roadmap. Each version = one feature. No bundling. No scope creep.
+In other words: a PM’s dream, and a perfect trap.
 
-- v0.1: CLI works
-- v0.5: Model switching
-- v1.0: Jupyter
-- v2.0: Streamlit
-- v3.0: Windows
-- v4.0: Local LLMs
+By 1:25 AM, I’m awake. Not “rested” awake.
 
-I'm still in bed. Phone in hand. But now I have a plan.
+More like “the goblins of curiosity are holding a standup in my skull” awake.
 
-## Act Two: Architecture (Desktop App)
+So I do the only reasonable thing:
 
-2:00 AM ET. I'm gonna need file access. I go upstairs. Fire up my laptop. I switch to Claude Desktop. 
+I start building a RAG tool with Claude… from my phone… in bed… like a responsible adult.
 
-Now we get into the details. This is where Claude shines—not replacing my judgment, but accelerating my exploration of options.
+### What you’re about to watch happen
 
-**Me:** "What vector database? I don't want vendor lock-in or cloud accounts."
+This is a pedagogic field report for non-programmer PMs who want to try:
 
-**Claude:** "ChromaDB. Local, open source, no cloud account needed."
+- Claude Desktop / ChatGPT Desktop today
+- Claude Code / Codex tomorrow
+- and (eventually) local models without turning into a full-time developer
 
-**Me:** "Embeddings?"
+You’ll see:
 
-**Claude:** "sentence-transformers/all-MiniLM-L6-v2. Free, runs locally, no API costs."
+- my prompts, verbatim
+- the tiny nuances that make the model behave
+- the moments where “PM thinking” saves the product
+- and the furballs that show up at 3:33 AM to remind you reality is undefeated
 
-**Me:** "Cost per query?"
+**Time (ET):** 1:25 AM – \~5:00 AM\
+**Role:** Product Manager (Recovering Engineer)\
+**Device Path:** iPhone (start) → MacBook Pro + Claude Desktop (finish)\
+**Goal:** Ship `v0.1` “Proof of Life” before the sun shows up and judges me.
 
-**Claude:** "Claude Haiku: $0.001-0.005 per query. Pennies."
+This is not a programmer’s write-up.
 
-See what's happening here? I'm making the strategic calls. Claude is doing the research. It's like having a really fast junior PM who can read documentation instantly.
+It’s a PM story about building *just enough* infrastructure to get value from a corpus, without accidentally inventing a new religion called “Tooling.”
 
-But like anywone working with a junior PM, I check the geneerated work, and not sure I'm comfortable with what I see in the python code. 
+---
 
-And here's where we made a critical decision: **metadata preservation**.
+## Prologue: The week-long simmer
 
-Having actually explored the original repos and read the LI and X posts, I knew the the ChatPRD transcripts have YAML frontmatter—guest name, title, date, keywords, YouTube URLs. This is gold. Claire Vo did real work here. 
+All week, I’d been admiring two things like a PM raccoon staring at shiny objects behind a fence:
 
-Claude Desktop gave me the bare minimum code, but it was leaving minimum viable value on the table.
+1. Lenny’s transcript GitHub repo (the corpus)
+2. Claire Vo’s conversion work (the structure)
 
-**Me:** "Can we preserve that metadata in the vector store?"
+It was the kind of “I can’t wait to tackle this over the weekend” thought that sounds wholesome.
 
-**Claude:** "Yes. Parse YAML separately, attach to each chunk, ChromaDB stores it, retrieval returns it."
+It is not wholesome.
 
-This changes everything. Now every answer comes with attribution: which episode, which guest, when it was recorded. That's not just nice—that's *trust*. That's the difference between a toy and a tool.
+It is the opening scene of a horror film.
 
-We document this decision in CLAUDE.md. Future me (or future contributors) will need to understand why this matters.
+---
 
-## Act Three: Implementation (Claude Code CLI)
+## 1:25 AM: “So this dropped earlier this week…”
 
-Now comes the build. I switch to Claude Code—the terminal tool for agentic coding.
+I wake up (because I’m old as dirt) and immediately do what every healthy adult does:
 
-This is where most "AI built my app!" stories fall apart. Because reality hits you in the face.
+I grab my phone and start thinking about a repo that “blessed the PM community.”
 
-### Problem 1: LangChain Import Hell
+**Prompt (1:25 AM):**
 
-```python
-from langchain.schema import Document
+```text
+So this dropped earlier this week
+https://github.com/ChatPRD/lennys-podcast-transcripts
+```
+
+Somewhere between insomnia and “just one quick look,” my PM brain goes:
+
+> “That’s not just transcripts. That’s a corpus.”
+
+> “That’s a product manager’s research assistant… if I can RAG it.... and later add reasoning and research to it...”
+
+And then the real fun begins.
+
+---
+
+## 1:30 AM: The first fork-in-the-road: “Is this even possible?”
+
+**Prompt (1:30 AM):**
+
+```text
+Actually I think I want to fork the repo into perhaps an RAG type project using Claude Code and open source tooling. Is that even possible on my MacBook Pro?
+```
+
+Notice what I *didn’t* say:
+
+- I didn’t ask for LangChain.
+- I didn’t ask for microservices.
+- I didn’t ask for a 14-step “agentic architecture.”
+
+I asked one thing:
+
+**Can I do this locally, on my Mac, without summoning a yak-shaving demon?**
+
+### PM prompting technique: start with feasibility, not features
+
+If you’re not sure the thing is even buildable, feature brainstorming is just… creative writing.
+
+---
+
+## 1:30 AM: Security brain kicks in (thankfully)
+
+Claude mentions API usage and I do what every “recovering engineer” PM should do:
+
+**I pounce on security.**
+
+**Prompt:**
+
+```text
+Once I have this set up, would I be able to switch models with API keys that I keep stashed as environment variables?
+```
+
+Translation:
+
+“I’m happy to build. I’m not happy to leaky keys.”
+
+### PM prompting technique: bake in guardrails early
+
+If you wait until “later” to address keys, logs, and local files…
+
+“later” becomes “post-incident.”
+
+---
+
+## 1:30 AM: Maintenance brain kicks in
+
+Because “a cool weekend project” is how a lot of future maintenance debt is born.
+
+**Prompt:**
+
+```text
+Is there some way that once I have this set up I can create notebooks on different topics?
+```
+
+Then I push on accessibility and cost, because this is for not-so-tech-savvy PMs, not just me:
+
+**Prompt:**
+
+```text
+Is the notion or obsidian path open source? Or do I need to think about using Google Collab approach to notebooks or Jupiter notebooks
+```
+
+### PM prompting technique: ask “how do we keep this cheap for learners?”
+
+It’s easy to build something that *you* can run.
+
+It's easy to build because much of the UX is offloaded to other tooling made for this job.
+
+It’s harder (and more valuable) to build something your learners can run without a second mortgage.
+
+---
+
+## 1:37 AM: The “vision” prompt (a.k.a. the anti-scope-drift anchor)
+
+Claude comes back with feature suggestions, and I can feel the drift starting.
+
+So I drop **the big anchor prompt**.
+
+**Prompt (1:37 AM):**
+
+```text
+I want to create some sort of system that encourages and makes it relatively easy for someone to take the GitHub fork that we are going to create, run it on their own MacBook for now, and windows for later, and be able to set up topical projects or notebooks that effectively allow them to explore the day via the RAG in combination with their choice of model
+
+Basically, I want a product manager to be able to use this corpus as a very low touch low technical way of getting high quality feedback
+
+I also want people to be able to avoid having to churn up CPU and tokens creating things like Claude projects or Gemini gems when they want to explore topic of product management against the Lenny corpus, which they might expand later with other .md subdirectors of wisdom.
+
+For example, we could take an add productside webinars and podcasts and create another subdirectory to help expand this body of wisdom in the future
+```
+
+This prompt does three important PM things:
+
+1. Defines the user (PMs, not engineers)
+2. Defines the value (low-touch, low-tech, high-quality feedback)
+3. Defines the cost and complexity enemy (CPU churn, token churn, “projects/gems rebuilding”)
+
+---
+
+## 1:47 AM: “Let’s scaffold the session” (setup + CLAUDE.md)
+
+I’m still on my phone. Still not writing to files, though I know I should.
+
+Still, I ask to see scaffolding that will work when I get to a real machine.
+
+**Prompt (1:47 AM):**
+
+```text
+I wonder if we shouldn't first create a bash setup.sh that a person could run to do the GitHub and directory work? And maybe have a Claude.md  So when we Open up Claude code from the command line We can point it at the file to help kickstart the session?
+```
+
+This is a pattern I want every PM to steal:
+
+> Use AI to create the rails, not just the train.
+
+Setup scripts. Session docs. Repeatability. On-ramps.
+
+---
+
+## 1:51–1:52 AM: Brand battle: “Don’t change the name on me.”
+
+Claude starts suggesting boring project names (because of course it does).
+
+And I do what any responsible product person does:
+
+I defend the brand like it owes me money.
+
+**Prompt (1:51 AM):**
+
+```text
+Don't change the name on me. Because what happens if we add other podcasts and webinar materials l? You just rebranded my name for the project and by doing so put a limit on it.
+```
+
+Then I draw the line:
+
+**Prompt (1:52 AM):**
+
+```text
+No, I realize we have to think like a programmer in this session, but we also have to think like a product manager
+`LennySan RAG-o-Matic` is the name of this project. Doing this by design
+```
+
+### PM prompting technique: be explicit about product decisions
+
+Models will “helpfully” optimize you into blandness.
+
+If you care about positioning, you must assert it.
+
+---
+
+## 1:59–2:10 AM: Proof-of-Life as a weapon against scope creep
+
+I introduce future interface ideas (CLI, Jupyter, Streamlit) but label them as future scope.
+
+**Prompt (1:59 AM):**
+
+```text
+I like this. One of the other things I want to be able to do with this is work in a localized large language model setting in the future. That is future scope just like windows is future scope.
+
+I think in the readme we also need to make clear about what type of interface we think we're going to have with each of these topical notebooks we create. I'm talking about telling people we're going to use Jupyter or Steamlit or CLI
+```
+
+Then I define the incremental releases like a PM who has been burned by bloat before:
+
+**Prompt (2:07 AM):**
+
+```text
+0.01 is me just getting the baseline repo published so we can start capturing work during this session.
+0.1 is the minimal, proof-of-life CLI with either an open AI API or anthropic Claude API
+```
+
+Then the money line:
+
+**Prompt:**
+
+```text
+Let's split 0.1
+
+0.01 Establish the beachhead
+0.1 Show Proof of life
+0.5 Then show proof of concept
+
+Remember we get more done faster when we focus on less.
+
+You're going to need to learn to be very narrow with your vertical slices working with me.
+```
+
+And I explicitly target cost:
+
+**Prompt (\~2:10 AM):**
+
+```text
+I also think as we work on the proof of life and proof of concept we can use a very very very inexpensive model within the anthropic API
+
+We're just looking for smoke signals not spectacular responses from the API  just yet
+```
+
+### PM prompting technique: name the release stages
+
+“Proof of Life” is magic phrasing, especially when managing up, because it tells everyone:
+
+- We are verifying the organs work.
+- We are not building a personality yet.
+- Nobody gets to sneak 'it's just a feature' into my bloodstream.
+
+---
+
+## 2:50 AM: Phone down. Laptop up. “Claude Desktop, you’re driving now.”
+
+At some point, reality hits: I need file access. I need a repo on disk.
+
+So I cast off the blankies and put on a warmer shirt.
+
+(It still snows here in Raleigh, NC ... and I know it's gonna be chilly)
+
+I migrate to Claude Desktop and hand it a path.
+
+**Prompt (2:50 AM):**
+
+```text
+Okay, so I've stopped this session on my phone and am now on Claude Desktop.
+
+I have updated the `claude_desktop_config.json` so you should have access.
+
+I went ahead and forked and renamed and published the repo in:
+
+"/Users/deanpeters/Code/lennysan-rag-o-matic
+
+You can see how I did it in the GITLENNY.md file I created.
+
+Note, within that same path, there is already a README.md and CLAUDE.md so first, we should likely rename those files?
+```
+
+### PM prompting technique: when switching tools, restate ground truth
+
+When you move from phone → desktop (or ChatGPT → Claude → Claude Code), assume the model’s brain got rebooted.
+
+Give it:
+
+- the path
+- the constraints
+- the “what exists already”
+- the next action
+
+---
+
+## 3:09 AM: The biggest save of the night: metadata
+
+Claude generates `index_corpus.py` and my spider-sense tingles as I read it line-by-line.
+
+Because I know the transcripts weren’t just text.
+
+They had YAML frontmatter metadata, the good stuff.
+
+So I ask the question that prevented a broken project model:
+
+**Prompt (3:09-ish):**
+
+```text
+Hey, for our setup.sh and index_corpus.py ... are we adding to our RAG the metadata that Clair Vo adorned the transcripts when she also converted them to .MD files? I want to make sure we're not overlooking that valuable asset.
+```
+
+This is not a nerd detail.
+
+This is a user trust detail.
+
+Because without metadata:
+
+- you can’t cite who said what
+- you can’t filter by guest/date
+- you can’t build “topic notebooks” that behave
+
+### PM prompting technique: ask “are we using the valuable parts of the source?”
+
+AI will happily index the “easy” parts and skip the “meaningful” parts.
+
+Your job is to protect the meaning.
+
+---
+
+## 3:22 AM: “User experience matters” (status, sleep, logs)
+
+Now I’m thinking about the non-coder PM who runs `setup.sh` and stares at a blinking cursor like it’s a feature hostage negotiation.
+
+So I prompt for UX:
+
+**Prompt (\~3:22 AM):**
+
+```text
+Hey, for our setup.sh and accompanying python files ... I would image that it's going to take some time to run. Do I get status updates on screen to a) see we're still processing and b) keep the system from going into a sleep mode as I go back to sleep and dream about the 0.1 test from the CLI about TAM/SAM/SOM theater and/or what interview questions Lenny might have for Rina Alexin, the awesome CEO of Productside?
+```
+
+Then:
+
+**Prompt:**
+
+```text
+setup Logs to perhaps capture if crap happens we have them to debug?
+```
+
+This is a product move, not a developer move.
+
+Progress indicators and logs are empathy in code form.
+
+---
+
+## 3:33 AM: The first furball: dependency rot (classic)
+
+By 3:30 we’re ready.
+
+By 3:33 the universe reminds me I haven’t earned joy yet.
+
+**Console capture:**
+
+```text
+✅ Dependencies installed
+
+🔍 Indexing corpus in ChromaDB...
+This will take 5-10 minutes.
+
+💡 To prevent your Mac from sleeping during indexing:
+   We'll use 'caffeinate' to keep the system awake.
+
+☕ Perfect time for that coffee break!
+
+Traceback (most recent call last):
+  File "/Users/deanpeters/Code/lennysan-rag-o-matic/index_corpus.py", line 15, in <module>
+    from langchain.schema import Document
 ModuleNotFoundError: No module named 'langchain.schema'
 ```
 
-Fuck. LangChain restructured their packages.
+My perfectly reasonable reaction:
 
-**Me:** "Fix it."
+> “do I need to brew or pip or what?”
 
-**Claude:** *Updates imports to `langchain_core.documents`, adds `langchain-text-splitters` to requirements*
+### PM lesson: dependency errors are not failure, they’re information
 
-Five minutes. Solved.
+They’re the product telling you what assumptions you made about your environment.
 
-### Problem 2: ChromaDB Type Validation
+Also: LangChain moved things again.
 
-```python
-ValueError: Expected metadata value to be a str, int, float, bool, 
-got 2025-06-15 which is a date
-```
-
-YAML is parsing dates as Python date objects. ChromaDB only accepts primitives.
-
-**Me:** "Fix the metadata conversion."
-
-**Claude:** *Adds type conversion logic—dates to strings, lists to comma-separated strings*
-
-Another five minutes.
-
-### Problem 3: Progress Indicator Conflicts
-
-The indexing takes 5-10 minutes. I'm going to sleep. I need progress bars so I know it's not hung.
-
-We add `tqdm` for progress bars, `caffeinate` to prevent Mac sleep, comprehensive logging to `logs/`.
-
-When I wake up, if it crashed, I have stack traces. If it worked, I have timestamps showing how long each step took.
-
-This is engineering. This is the unsexy work that makes tools actually usable.
-
-## The Build Session: 303 Episodes, 37,450 Chunks
-
-```bash
-./setup.sh
-```
-
-**Output:**
-```
-📚 Loading transcripts: 303/303 [00:00<00:00, 984 episodes/s]
-✂️  Chunking: 303/303 [00:00<00:00, 416 episodes/s]
-🧠 Creating embeddings... (~5-10 minutes)
-✅ Indexed 37,450 chunks from 303 episodes
-```
-
-It worked.
-
-## The Test
-
-```bash
-python explore.py 'What does Lenny say about pricing?'
-```
-
-**Output:**
-```
-💡 Answer:
---------------------------------------------------
-Based on the context provided, Lenny recognizes pricing as 
-worthy of deep discussion. He asks guests about common mistakes, 
-biggest opportunities missed, and different strategic approaches...
---------------------------------------------------
-
-📚 Sources:
-• Todd Jackson: "A framework for finding product-market fit" (2024-04-11)
-  https://www.youtube.com/watch?v=yc1Uwhfxacs
-• Naomi Ionita: "How to price your product" (2023-01-12)
-  https://www.youtube.com/watch?v=xvQadImf568
-
-ℹ️  Cost: ~$0.0014
-```
-
-Source attribution. YouTube links. Publication dates. Cost transparency.
-
-This isn't a demo. This is a *tool*.
-
-## The Real Costs (Because We're Product Managers)
-
-Let's talk actual numbers. Not estimates. Measured API usage.
-
-**5 test queries (from API logs):**
-- Input tokens: 4,258
-- Output tokens: 893
-- Total cost: **$0.007** (seven-tenths of a penny)
-- Per query: **$0.0014** (about 1/7th of a penny)
-
-**Development costs:**
-- This conversation (architecture + debugging): ~$0.15 using Claude Sonnet 4
-- Setup embeddings: $0.00 (runs locally)
-- **Total project cost: ~$0.16** (sixteen cents)
-
-**Extrapolated usage:**
-- 100 queries/month: $0.14
-- 1,000 queries/month: $1.40
-- 10,000 queries/month: $14.00
-
-Compare to ChatGPT Plus ($20/month flat rate) or Claude Pro ($20/month). If you're running thousands of queries, this is way cheaper.
-
-The cost transparency isn't just nice—it's strategic. When you know exactly what each query costs, you can make rational decisions about model switching (v0.5) or adding more expensive features.
-
-## What I Learned About PM-AI Collaboration
-
-### 1. Progressive Elaboration Works
-
-- **Phone:** High-level concept, validate approach
-- **Desktop:** Architecture decisions, documentation
-- **CLI:** Implementation, debugging, shipping
-
-Each tool has a role. Don't try to code on your phone. Don't try to brainstorm in the terminal.
-
-### 2. Strategic Decisions Are Still Yours
-
-Claude suggested technologies. I chose them based on my constraints:
-- No vendor lock-in → ChromaDB over Pinecone
-- No recurring costs → Local embeddings over OpenAI
-- Mac-first → Windows in v3.0, not v0.1
-
-AI accelerates research. It doesn't replace judgment.
-
-### 3. Discipline Beats Features
-
-We could have built model switching in v0.1. We could have added Jupyter notebooks. We could have made it cross-platform.
-
-Instead, we shipped ONE thing: queries work.
-
-Now users have a tool. In v0.5, they'll get model switching. In v1.0, Jupyter.
-
-This is how you ship fast: by shipping *less*.
-
-### 4. Documentation Is Part of the Product
-
-We created:
-- README with clear setup instructions
-- CLAUDE.md with architectural decisions
-- CONTRIBUTING.md with contribution guidelines
-- GitHub issue templates
-- LICENSE file
-- Release notes
-
-Why? Because a tool without docs is a puzzle. And PMs don't want puzzles—they want answers.
-
-Claude helped draft these, but I shaped them. Voice matters. Clarity matters.
-
-## The Meta Lesson
-
-This isn't a story about AI replacing developers.
-
-This is a story about a PM with:
-- Clear product vision (query Lenny's corpus)
-- Technical knowledge (enough to make architectural calls)
-- Discipline (one feature per version)
-- AI tooling (to accelerate the grunt work)
-
-...who shipped a working tool in one night.
-
-Could I have done this without Claude? Yes, but it would have taken a weekend, not a night. I would have spent hours reading LangChain docs, debugging ChromaDB type errors, and writing boilerplate.
-
-Claude compressed that from hours to minutes.
-
-## What's Next
-
-**v0.5 - Model Switching**
-
-Add `--model` flag. Support Claude Sonnet 4, GPT-4.
-
-One feature. Ships in a week.
-
-**v0.75 - Web Search Fallback**
-
-When RAG returns "I don't have information," trigger web search.
-
-One feature. Ships in two weeks.
-
-**v1.7 - Corpus Sync**
-
-Script to pull new episodes from ChatPRD upstream, incremental re-indexing.
-
-One feature. Ships when it's needed.
-
-We'll get there. One feature at a time.
-
-## Try It Yourself
-
-The repo is public: [github.com/deanpeters/lennysan-rag-o-matic](https://github.com/deanpeters/lennysan-rag-o-matic)
-
-Clone it. Run `./setup.sh`. Ask questions.
-
-If you find bugs, open an issue. If you want features, check the roadmap first—we ship one at a time.
-
-And if you're a PM thinking "I could never build this"—yes, you could.
-
-You just need:
-1. A clear vision
-2. Enough technical knowledge to make calls
-3. Discipline to ship one feature at a time
-4. AI tools to handle the grunt work
-
-That's it. That's the new PM superpower.
-
-## The Uncomfortable Truth
-
-We're not replacing engineers. We're changing what PMs can do before handing work to engineers.
-
-Used to be: PM writes spec → Engineer implements → PM validates
-
-Now it's: PM builds v0.1 proof of life → PM validates with users → PM hands to engineer with working prototype
-
-The spec isn't a document anymore. It's a working CLI tool with logs, tests, and documentation.
-
-This makes engineering handoffs clearer, faster, and less prone to miscommunication.
-
-Engineers should welcome this. They get fewer "build me a thing and we'll see if users want it" projects. They get more "here's a validated prototype, make it production-ready" projects.
-
-That's a better use of everyone's time.
-
-## One More Thing
-
-At 3 AM, lying in bed with my phone, I had an idea.
-
-By morning, I had architecture.
-
-By night, I had a shipped v0.1.
-
-That's the PM workflow now.
-
-Get comfortable with it.
+Of course it did.
 
 ---
 
-*Dean Peters is Principal Consultant at Productside, teaching AI product management to enterprise clients. He writes about AI product management without the hype at [substack link]. This tool? It's open source. Go use it.*
+## \~3:54 AM: Proof of Life achieved… and it’s “stupid right now” (good!)
+
+After multiple rounds of “fix thing, run thing, watch it explode differently, copy error messages to claude for analysis and fixes,” we get to a working state.
+
+**Prompt (\~3:54 AM):**
+
+```text
+Success ... see attached console capture.
+Some thoughts.
+1 ) can we supress the annoying deprecation errors?
+2) can we instruct the CLI to engage a web search (via the model) if they can't find the info? You'll see what I mean when I issue the TAM-SAM-SOM and Rina Alexin, Productside CEO questions.
+```
+
+This is exactly how “Proof of Life” should feel:
+
+- it works
+- it’s ugly
+- it reveals the real next work
+
+If your v0.1 feels polished, you probably overbuilt it.
 
 ---
 
-## Appendix: The Tools
+## 4:30 AM: Costs (because I’m a PM, not a chaos gremlin)
 
-**Hardware:**
-- iPhone (conceptual phase)
-- MacBook Pro (architecture + implementation)
+I check actual API costs and write them down like a responsible adult. Besides, all 5 of my loyal readers are gonig to want to know this:
 
-**AI Tools:**
-- Claude (Anthropic) - mobile app, desktop app, Claude Code CLI
-- All conversations in one thread, context preserved across devices
+- Total project: **\~\$0.16**
+- 5 queries: **\$0.007**
+- Extrapolated 1,000 queries: **\$1.40**
 
-**Development Stack:**
-- Python 3.13
-- ChromaDB (vector database)
-- LangChain (RAG framework)
-- sentence-transformers (embeddings)
-- Claude Haiku 4.5 (LLM)
+Then the desktop-assistant reality check:
 
-**Time Investment:**
-- Concept: 30 minutes (phone, in bed)
-- Architecture: 2 hours (desktop, morning coffee)
-- Implementation: 4 hours (CLI, debugging, docs)
-- **Total: One night**
+**Prompt (4:38 AM):**
 
-**Actual Cost (Measured):**
-- Setup: $0.00 (local embeddings, no API calls)
-- Per query: $0.0014 (measured across 5 test queries)
-- 5 test queries: $0.007 total (less than a penny)
-- Development session: ~$0.15 (Claude Sonnet 4 for architecture/debugging via Desktop/Code)
-- **Total project cost: $0.157** (sixteen cents)
+```text
+You knucklehead ... okay this entire session ... consumed 90% of my session limit an ~20% of my weekly session limit for the Pro plan. We need to add that to our docs.
 
-**Lines of Code:**
-- Python: ~600 lines
-- Bash: ~200 lines
-- Documentation: ~2,000 words
+Then it's time for bed.
+```
 
-**Result:**
-- 303 episodes indexed
-- 37,450 chunks searchable
-- Full metadata preserved
-- Source attribution on every query
-- Comprehensive logging
-- Complete documentation
-- MIT licensed
-- Ready for contributors
+### PM lesson: cost has TWO meters
 
-**Not bad for a night's work.**
+1. API dollars
+2. tool limits / quota
+
+Both matter.
+
+---
+
+## \~5:00 AM: Ship it. Document it. Get out.
+
+I end with the kind of “do this so you don’t break yourself later” release checklist that PMs secretly love.
+
+**Commit + push script:**
+
+```text
+# Navigate to repo
+cd ~/Code/lennysan-rag-o-matic
+
+# Deactivate venv if active
+deactivate
+
+# Check status (see what's changed)
+git status
+
+# Add everything
+git add .
+
+# Commit with comprehensive message
+git commit -m "feat: v0.1 complete with session story
+
+- Created deannotes/ directory for article series
+- Moved session narrative to SESSION.0.1.STORY.md
+- Fixed ASCII art rendering in README
+- Added activate.sh convenience script
+- Updated all cost data with actual measurements
+- Platform limits: 90% daily, 20% weekly
+- Timeline: 1 AM - 4:40 AM (3h40m total)
+- Result: 303 episodes, 37,450 chunks, full metadata
+
+Ready for v0.5 model switching."
+
+# Push to GitHub
+git push origin main
+
+# Verify it's there
+git log -1 --oneline
+
+# You're done!
+echo "✅ v0.1 shipped! Go to bed! 😴"
+```
+
+Reader, I did not go to bed.
+
+I negotiated with bed.
+
+---
+
+# What I want non-programmer PMs to learn from this weekend
+
+## 1) Your prompts are your product decisions
+
+If you don’t state the user, value, and constraints, the model will invent them for you.
+
+## 2) “Proof of Life” beats “MVP” when you’re establishing scope by appetite
+
+Name the stage. Guard the stage.
+
+## 3) Read the generated stuff before you run it
+
+That metadata moment is the difference between a toy and a tool. That goes 2x for the security stuff.
+
+## 4) Add UX to scripts: progress + sleep prevention + logs
+
+Because your user is a human, not a CI pipeline.
+
+## 5) Measure cost like a PM
+
+Not vibes. Numbers.
+
+---
+
+# Next episode teaser: v0.5 handoff
+
+This is the part where “Claude Desktop wrote files” hands off to:
+
+- Claude Code (or Codex later)
+- model switching
+- cleaner dependency strategy
+- better retrieval behaviors
+
+But not tonight.
+
+Tonight, we shipped Proof of Life.
+
+✅ v0.1 shipped. Go to bed.
+
