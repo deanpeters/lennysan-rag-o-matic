@@ -12,19 +12,18 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 4. **No vendor lock-in**: Architecture supports multiple LLM providers
 5. **Mac-first, then expand**: v0.1-2.5 Mac only, v3.0 adds Windows
 
-## Current Status: v0.1 (Proof of Life)
+## Current Status: v0.5 (Model Switching)
 
 **What exists:**
 - ✅ CLI query tool (`explore.py`)
 - ✅ Indexing script (`index_corpus.py`) with YAML metadata preservation
 - ✅ Setup automation (`setup.sh`)
 - ✅ ChromaDB for vector storage with metadata
-- ✅ Claude Haiku integration (cheapest model)
+- ✅ Model switching across Anthropic + OpenAI
 - ✅ Source attribution (guest, title, date, YouTube links)
 - ✅ Mac-only support
 
-**What's explicitly NOT in v0.1:**
-- ❌ Model switching (that's v0.5)
+**What's explicitly NOT in v0.5:**
 - ❌ Jupyter notebooks (that's v1.0)
 - ❌ Topic organization (that's v1.5)
 - ❌ Multiple corpuses (that's v2.5)
@@ -39,9 +38,9 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 
 ### Why Claude Haiku?
 - Cheapest model (~$0.001-0.005 per query)
-- Good enough for proof of life
+- Good enough for smoke tests
 - Tests the full pipeline without spending money
-- Users can upgrade to better models in v0.5+
+- Users can switch to better models via `--model`
 
 ### Why sentence-transformers/all-MiniLM-L6-v2?
 - Free local embeddings (no API costs)
@@ -85,7 +84,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 
 **Do NOT remove this in future versions** - metadata preservation is foundational to the project's value proposition.
 
-## v0.1 Implementation Details
+## v0.5 Implementation Details
 
 ### What setup.sh Does
 1. **Preflight checks**: Verifies Mac OS, Git, Python 3.9+, ANTHROPIC_API_KEY
@@ -106,14 +105,14 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 7. **Stores in ChromaDB**: Persists to `data/chroma_db/` with metadata
 
 ### What explore.py Does
-1. **Validates environment**: Checks for API key and vector database
+1. **Validates environment**: Checks for the right API key based on `--model` and vector database
 2. **Loads vectorstore**: Connects to existing ChromaDB
 3. **Queries**: Converts natural language to vector search
 4. **Retrieves chunks**: Gets top 5 relevant chunks with metadata
-5. **Synthesizes answer**: Uses Claude Haiku to generate response
+5. **Synthesizes answer**: Uses the selected model to generate response (direct + inferred + missing)
 6. **Formats sources**: Deduplicates episodes, shows top 3 with guest/title/date/URL
 
-### File Paths (Accurate as of v0.1)
+### File Paths (Accurate as of v0.5)
 - **Source transcripts**: `/episodes/{guest-name}/transcript.md` (from fork)
 - **Vector database**: `/data/chroma_db/` (generated, gitignored)
 - **Virtual environment**: `/.venv/` (generated, gitignored)
@@ -121,7 +120,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - **Config**: `/requirements.txt`, `/.gitignore` (in repo)
 - **Docs**: `/README.md`, `/CLAUDE.md`, `/GITLENNY.md` (in repo)
 
-### Cost Breakdown (v0.1)
+### Cost Breakdown (v0.5)
 - **Embeddings**: $0 (local model, no API calls)
 - **Indexing**: One-time, ~5-10 minutes compute time
 - **Per query**: ~$0.001-0.005 (Claude Haiku API)
@@ -151,14 +150,19 @@ lennysan-rag-o-matic/
 
 ## Roadmap (One Feature Per Version)
 
-**v0.1 - Proof of Life** ✅ Current
+**v0.1 - Proof of Life** ✅ Shipped
 - CLI works with Claude Haiku
 - Single feature: basic RAG query loop
 
-**v0.5 - Model Switching**
+**v0.5 - Model Switching** ✅ Current
 - Add `--model` flag to explore.py
-- Support: claude-haiku, claude-sonnet-4, gpt-4
+- Support: claude-haiku, claude-sonnet-4, gpt-4o-mini, gpt-4o
 - Single feature: choose your model
+
+**v0.6 - CONFIGS.yaml**
+- Add a single configuration file for defaults and paths
+- Keep CLI flags as overrides
+- Single feature: centralize configuration
 
 **v0.75 - Web Search Fallback** (New!)
 - Add `--web-fallback` flag
@@ -205,33 +209,12 @@ lennysan-rag-o-matic/
 
 ## Building Future Versions
 
-### For v0.5 (Model Switching)
+### For v0.5 (Model Switching) — Completed
 
-The groundwork is already there. You need to:
+Model switching is implemented in `explore.py` with `--model` and `--list-models`,
+plus Anthropic + OpenAI support and model-specific API key checks.
 
-1. Update `explore.py`:
-   - Add argparse for `--model` flag
-   - Create model mapping dict
-   - Support both Anthropic and OpenAI
-   - Default to claude-sonnet-4 (better than Haiku, cheaper than 4.5)
-
-2. Update `requirements.txt`:
-   - Add `openai>=1.0.0`
-   - Add `langchain-openai>=0.0.5`
-
-3. Update error handling:
-   - Check for appropriate API keys based on model choice
-   - Graceful fallback if key missing
-
-4. Update README:
-   - Document new `--model` flag
-   - Show cost comparison per model
-   - Update "Current Status" to v0.5
-
-**Do NOT add:**
-- Config files (keep it simple)
-- Multiple file changes
-- Jupyter support (that's v1.0)
+Do not expand model configuration here; CONFIGS.yaml is reserved for v0.6.
 
 ### For v1.0 (Jupyter)
 

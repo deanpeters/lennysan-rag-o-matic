@@ -12,7 +12,7 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                       v0.1
+                                                       v0.5
 ```
                                                        
 A low-barrier PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG (Retrieval Augmented Generation).
@@ -50,16 +50,20 @@ Product managers comfortable with:
 
 If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No shame - different tools for different comfort levels.
 
-## Current Status: v0.1 (Proof of Life)
+## Current Status: v0.5 (Model Switching)
 
 **What works right now:**
 - CLI query tool
 - Lenny corpus indexed in ChromaDB
-- Claude Haiku API integration (cheapest model for testing)
+- Model switching across Anthropic + OpenAI
+- `--list-models` helper to see available choices
 - Mac only
 
+**Release notes:**
+- `releasenotes/RELEASE_v0.5.md`
+- `releasenotes/RELEASE_v0.1.md`
+
 **What this is NOT yet:**
-- Not model switching (v0.5)
 - Not Jupyter notebooks (v1.0)
 - Not topic organization (v1.5)
 - Not Streamlit UI (v2.0)
@@ -102,7 +106,7 @@ Lenny discusses several pricing strategies including value-based pricing...
   https://www.youtube.com/watch?v=xyz
 ```
 
-**The RAG Pipeline**: Your query → Vector search finds relevant chunks → Claude synthesizes an answer → You get insights with sources.
+**The RAG Pipeline**: Your query → Vector search finds relevant chunks → Model synthesizes an answer (direct + inferred + missing) → You get insights with sources.
 
 ### Bonus: Topic Index (Inherited from Original Repo)
 
@@ -115,9 +119,10 @@ Use both! The topic files are great for discovering episodes, while the RAG syst
 
 ## Prerequisites
 
-**Required for v0.1:**
+**Required for v0.5:**
 - GitHub account (you're here, so ✓)
-- [Anthropic API key](https://console.anthropic.com/) (Claude only for now)
+- [Anthropic API key](https://console.anthropic.com/) (for Claude models)
+- [OpenAI API key](https://platform.openai.com/) (for GPT models)
 - Python 3.9 or higher
 - Git
 
@@ -138,7 +143,7 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    cd lennysan-rag-o-matic
    ```
 
-2. **Set your Anthropic API key:**
+2. **Set your Anthropic API key (required for Claude models):**
    ```bash
    # Add to ~/.bashrc or ~/.zshrc
    export ANTHROPIC_API_KEY='sk-ant-...'
@@ -147,7 +152,16 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    source ~/.bashrc  # or source ~/.zshrc
    ```
 
-3. **Run setup:**
+3. **(Optional) Set your OpenAI API key (only if using GPT models):**
+   ```bash
+   # Add to ~/.bashrc or ~/.zshrc
+   export OPENAI_API_KEY='sk-...'
+
+   # Reload your shell
+   source ~/.bashrc  # or source ~/.zshrc
+   ```
+
+4. **Run setup:**
    ```bash
    chmod +x setup.sh activate.sh  # Make scripts executable
    ./setup.sh
@@ -157,7 +171,7 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    - Install Python dependencies
    - Index transcripts in ChromaDB (one-time, ~5-10 minutes)
 
-4. **Ask a question:**
+5. **Ask a question:**
    ```bash
    # Activate environment (first time)
    source .venv/bin/activate
@@ -165,8 +179,15 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    # Or use the convenience script (after first time)
    source activate.sh
    
-   # Query away
+   # Query away (default model: Claude Haiku)
    python explore.py "What does Lenny say about pricing?"
+
+   # Choose a model
+   python explore.py --model sonnet-4 "What does Lenny say about pricing?"
+   python explore.py --model gpt-4o-mini "What does Lenny say about pricing?"
+
+   # List available models
+   python explore.py --list-models
    
    # Exit when done
    deactivate
@@ -174,9 +195,9 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
 
 That's it. You now have 320 episodes searchable from your command line.
 
-## Cost Expectations (v0.1)
+## Cost Expectations (v0.5)
 
-**Actual measured costs:**
+**Actual measured costs (Haiku baseline):**
 - **Setup**: $0 (local embeddings, no API calls)
 - **Per query**: $0.0014 (measured from 5 test queries)
 - **Local storage**: ~500MB
@@ -186,7 +207,16 @@ That's it. You now have 320 episodes searchable from your command line.
 - 1,000 queries: $1.40
 - Compare to ChatGPT Plus ($20/month) or Claude Pro ($20/month)
 
-We're using the cheapest Claude model (Haiku) for v0.1 testing. Better models come in v0.5+.
+**Model cost tiers (rule of thumb):**
+
+| Model | Cost | When to use |
+| --- | --- | --- |
+| `haiku` | Cheapest | Smoke tests, quick checks |
+| `gpt-4o-mini` | Very cheap | OpenAI smoke tests |
+| `sonnet-4` | Mid | Deeper analysis |
+| `gpt-4o` | Mid‑high | OpenAI quality runs |
+
+Use Haiku or GPT‑4o mini for cheap smoke tests, and Sonnet 4 or GPT‑4o for higher‑quality answers.
 
 ## Tactical Roadmap
 
@@ -198,22 +228,19 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - Git the repo (SEE GITLENNY.md) & rename
 - publish deanpeters/lennysan-rag-o-matic
 
-**v0.1 - Proof of Life** ✅ Current
-- at about 1:00 AM, start dictating ideas via Claude mobile app
-- at about 2:00 PM, go upstairs, and beat on poor Claude Desktop to get sh!t working
-- by 4:00 AM ET, we're wrapping up
+**v0.1 - Proof of Life** ✅ Shipped
 - CLI works with Claude Haiku
-- consume 20% of weekly usage limits
-- Now to sleeep
+- Proof the RAG loop works end‑to‑end
 
-**v0.5 - Model Switching**
+**v0.5 - Model Switching** ✅ Current
 - Add `--model` flag
-- Support Claude Sonnet 4 and GPT-4
+- Support Claude Haiku, Claude Sonnet 4, GPT‑4o mini, GPT‑4o
 - One feature: choose your model
 
-**v0.6 - Coding Tool Switching**
-- Test out using Codex to burn less Claude tokens
-- Test out using Antigravity because I'm curious that way
+**v0.6 - CONFIGS.yaml**
+- Add a single configuration file for defaults and paths
+- Keep CLI flags as overrides (no breaking changes)
+- One feature: centralize configuration
 
 **v0.75 - Web Search Fallback**
 - Add `--web-fallback` flag
@@ -270,7 +297,7 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - Fully offline operation
 - One feature: no API costs
 
-## What Gets Set Up (v0.1)
+## What Gets Set Up (v0.5)
 ```
 lennysan-rag-o-matic/
 ├── episodes/               # Lenny's transcripts (already here)
@@ -300,6 +327,13 @@ More structure added in later versions.
   ```
 - Reload shell: `source ~/.bashrc` or `source ~/.zshrc`
 - Or just edit `~/.zshrc` directly and restart terminal
+
+**Model Switching (v0.5)**
+- List available models: `python explore.py --list-models`
+- If you pick a GPT model, set `OPENAI_API_KEY` (Claude models use `ANTHROPIC_API_KEY`)
+- If you see a key error, re-source your shell: `source ~/.zshrc`
+- Start with cheap models for smoke tests: `--model haiku` or `--model gpt-4o-mini`
+- If answers feel too strict, the CLI now uses a 3‑section response to separate direct vs inferred insights.
 
 **"Command not found: python"**
 - Try `python3` instead
@@ -333,7 +367,7 @@ MIT License - same as the source transcript corpus. Fork it, extend it, learn fr
 
 ## Contributing
 
-**v0.1 contributions welcome:**
+**v0.5 contributions welcome:**
 - Bug fixes
 - Better error messages
 - Mac compatibility improvements
