@@ -4,7 +4,7 @@
 
 ## The Setup
 
-It's 3 AM. I'm lying in bed, thinking about Lenny Rachitsky's podcast corpus. 
+It's 1 AM. I'm lying in bed, thinking about Lenny Rachitsky's podcast corpus. 
 
 Three hundred twenty episodes. Thousands of insights about pricing, growth, product-market fit, enterprise sales. All locked up in transcripts that are a pain in the ass to search through.
 
@@ -37,7 +37,7 @@ I'm still in bed. Phone in hand. But now I have a plan.
 
 ## Act Two: Architecture (Desktop App)
 
-Morning. Coffee. I switch to Claude Desktop.
+2:00 AM ET. I'm gonna need file access. I go upstairs. Fire up my laptop. I switch to Claude Desktop. 
 
 Now we get into the details. This is where Claude shines—not replacing my judgment, but accelerating my exploration of options.
 
@@ -55,9 +55,13 @@ Now we get into the details. This is where Claude shines—not replacing my judg
 
 See what's happening here? I'm making the strategic calls. Claude is doing the research. It's like having a really fast junior PM who can read documentation instantly.
 
-But here's the critical decision: **metadata preservation**.
+But like anywone working with a junior PM, I check the geneerated work, and not sure I'm comfortable with what I see in the python code. 
 
-The ChatPRD transcripts have YAML frontmatter—guest name, title, date, keywords, YouTube URLs. This is gold. Claire Vo did real work here.
+And here's where we made a critical decision: **metadata preservation**.
+
+Having actually explored the original repos and read the LI and X posts, I knew the the ChatPRD transcripts have YAML frontmatter—guest name, title, date, keywords, YouTube URLs. This is gold. Claire Vo did real work here. 
+
+Claude Desktop gave me the bare minimum code, but it was leaving minimum viable value on the table.
 
 **Me:** "Can we preserve that metadata in the vector store?"
 
