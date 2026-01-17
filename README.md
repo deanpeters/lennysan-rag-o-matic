@@ -135,7 +135,7 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
 
 3. **Run setup:**
    ```bash
-   chmod +x setup.sh
+   chmod +x setup.sh activate.sh  # Make scripts executable
    ./setup.sh
    ```
    This will:
@@ -145,7 +145,17 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
 
 4. **Ask a question:**
    ```bash
+   # Activate environment (first time)
+   source .venv/bin/activate
+   
+   # Or use the convenience script (after first time)
+   source activate.sh
+   
+   # Query away
    python explore.py "What does Lenny say about pricing?"
+   
+   # Exit when done
+   deactivate
    ```
 
 That's it. You now have 320 episodes searchable from your command line.
@@ -251,6 +261,7 @@ lennysan-rag-o-matic/
 ├── explore.py             # CLI tool
 ├── index_corpus.py        # Indexing script
 ├── setup.sh              # Setup script
+├── activate.sh           # Quick activation helper
 ├── requirements.txt       # Python dependencies
 └── README.md
 ```
