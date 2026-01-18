@@ -122,6 +122,13 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - **Config**: `/requirements.txt`, `/.gitignore` (in repo)
 - **Docs**: `/README.md`, `/CLAUDE.md`, `/GITLENNY.md` (in repo)
 
+### Upstream Transcripts Fork + PR Workflow
+- **Local path**: `/Users/deanpeters/Code/lennys-podcast-transcripts`
+- **Fork URL (repo)**: `https://github.com/deanpeters/lennys-podcast-transcripts`
+- **Upstream URL**: `https://github.com/ChatPRD/lennys-podcast-transcripts`
+- **PR URL (template)**: `https://github.com/deanpeters/lennys-podcast-transcripts/pull/new/<branch-name>`
+- **Example PR**: `https://github.com/deanpeters/lennys-podcast-transcripts/pull/new/add-lennysan-rag-o-matic`
+
 ### Cost Breakdown (v0.6)
 - **Embeddings**: $0 (local model, no API calls)
 - **Indexing**: One-time, ~5-10 minutes compute time

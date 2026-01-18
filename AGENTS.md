@@ -35,6 +35,13 @@ Build and evolve a low-barrier PM research tool that lets product managers explo
   - `data/chroma_db/`
   - `logs/` (if present)
 
+## Upstream Transcripts Fork + PR Workflow
+- Local path: `/Users/deanpeters/Code/lennys-podcast-transcripts`
+- Fork URL (repo): `https://github.com/deanpeters/lennys-podcast-transcripts`
+- Upstream URL: `https://github.com/ChatPRD/lennys-podcast-transcripts`
+- PR URL (template): `https://github.com/deanpeters/lennys-podcast-transcripts/pull/new/<branch-name>`
+- Example PR: `https://github.com/deanpeters/lennys-podcast-transcripts/pull/new/add-lennysan-rag-o-matic`
+
 ## Critical Architectural Decision: YAML Metadata Preservation
 Claire Vo enriched transcripts with YAML frontmatter containing:
 - guest name, episode title

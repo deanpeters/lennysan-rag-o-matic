@@ -15,7 +15,7 @@
                                                        v0.6
 ```
                                                        
-A low-barrier PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG (Retrieval Augmented Generation).
+A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
 
 ## What This Does
 
