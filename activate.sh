@@ -9,6 +9,11 @@
 # - It keeps project-specific libraries separate from your system Python.
 # - It prevents version conflicts with other tools on your machine.
 # - It makes "works on my machine" setups more reproducible for others.
+# How to use it
+# cd ~/<your paths>/lennysan-rag-o-matic
+# source ./activate.sh
+# python explore.py --list-models
+# python explore.py --model <mode-name> "your test query"
 
 # Detect whether this script is being sourced (bash/zsh compatible).
 is_sourced=0
