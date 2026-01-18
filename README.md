@@ -61,6 +61,7 @@ If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No 
 - Mac only
 
 **Release notes:**
+- `releasenotes/RELEASE_v0.62.md`
 - `releasenotes/RELEASE_v0.6.md`
 - `releasenotes/RELEASE_v0.5.md`
 - `releasenotes/RELEASE_v0.1.md`
@@ -187,6 +188,7 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    # Choose a model
    python explore.py --model sonnet-4 "What does Lenny say about pricing?"
    python explore.py --model gpt-4o-mini "What does Lenny say about pricing?"
+   python explore.py "What does Lenny say about pricing?" --model gpt-4o
 
    # List available models
    python explore.py --list-models

@@ -213,7 +213,7 @@ def main():
     )
     parser.add_argument(
         "question",
-        nargs=argparse.REMAINDER,
+        nargs="*",
         help="Your question in quotes (e.g., \"What does Lenny say about pricing?\")",
     )
     parser.add_argument(
