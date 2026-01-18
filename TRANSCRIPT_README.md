@@ -117,6 +117,8 @@ If you notice any issues with the transcripts or metadata, please open an issue 
 
 Here are some projects that have been built using this transcript archive:
 
+**[Lenny Playbook](https://lilys.ai/collections/141200?s=1)** by LilysAI – Turns Lenny Podcast transcripts into structured notes, visual infographics, and a chat interface to explore ideas and get actionable answers.
+
 **[Learn from Lenny](https://x.com/learnfromlenny)** by [@IamAdiG](https://x.com/IamAdiG) - An AI agent on X that provides credible product advice based on Lenny's podcasts. Tag it to get spot-on advice with no fluff.
 
 **[Lenny Skills Database](https://refoundai.com/lenny-skills/)** by Refound AI - A searchable database of 86 actionable skills extracted from 297 podcast episodes. Learn how the best product teams actually work.
@@ -127,7 +129,7 @@ Here are some projects that have been built using this transcript archive:
 
 **[Lenny's Frameworks](https://lennys-frameworks.vercel.app/)** - A collection of frameworks and mental models extracted from Lenny's Podcast episodes.
 
-**[Lenny Listens](https://lenny-listens.vercel.app/)** - An interactive tool for exploring and searching Lenny's Podcast content.
+**[Lenny Listens](https://lenny-listens.vercel.app/)** - Uses Lenny’s interviewing methodology to generate AI-led interviews you can run with real customers.
 
 **[Lenny's Advice Arena](https://lennysadvicearena.lovable.app/)** - An interactive experience for exploring product advice from Lenny's Podcast.
 
