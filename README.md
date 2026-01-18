@@ -12,7 +12,7 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                       v0.5
+                                                       v0.6
 ```
                                                        
 A low-barrier PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG (Retrieval Augmented Generation).
@@ -50,16 +50,18 @@ Product managers comfortable with:
 
 If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No shame - different tools for different comfort levels.
 
-## Current Status: v0.5 (Model Switching)
+## Current Status: v0.6 (CONFIGS.yaml)
 
 **What works right now:**
 - CLI query tool
 - Lenny corpus indexed in ChromaDB
 - Model switching across Anthropic + OpenAI
 - `--list-models` helper to see available choices
+- CONFIGS.yaml for editable defaults (models, paths, retrieval)
 - Mac only
 
 **Release notes:**
+- `releasenotes/RELEASE_v0.6.md`
 - `releasenotes/RELEASE_v0.5.md`
 - `releasenotes/RELEASE_v0.1.md`
 
@@ -119,7 +121,7 @@ Use both! The topic files are great for discovering episodes, while the RAG syst
 
 ## Prerequisites
 
-**Required for v0.5:**
+**Required for v0.6:**
 - GitHub account (you're here, so ✓)
 - [Anthropic API key](https://console.anthropic.com/) (for Claude models)
 - [OpenAI API key](https://platform.openai.com/) (for GPT models)
@@ -195,7 +197,27 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
 
 That's it. You now have 320 episodes searchable from your command line.
 
-## Cost Expectations (v0.5)
+## Configuration (v0.6)
+
+`CONFIGS.yaml` lets non‑technical PMs safely change defaults without touching code.
+CLI flags always win, so power users can override config when needed.
+
+```yaml
+defaults:
+  model: "haiku"  # haiku | sonnet-4 | gpt-4o-mini | gpt-4o
+
+paths:
+  vector_db: "data/chroma_db"
+
+retrieval:
+  search_type: "mmr"
+  k: 8
+  fetch_k: 24
+```
+
+Edit `CONFIGS.yaml` in the repo root. If the file is missing, the tool uses built‑in defaults.
+
+## Cost Expectations (v0.6)
 
 **Actual measured costs (Haiku baseline):**
 - **Setup**: $0 (local embeddings, no API calls)
@@ -232,12 +254,12 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - CLI works with Claude Haiku
 - Proof the RAG loop works end‑to‑end
 
-**v0.5 - Model Switching** ✅ Current
+**v0.5 - Model Switching** ✅ Shipped
 - Add `--model` flag
 - Support Claude Haiku, Claude Sonnet 4, GPT‑4o mini, GPT‑4o
 - One feature: choose your model
 
-**v0.6 - CONFIGS.yaml**
+**v0.6 - CONFIGS.yaml** ✅ Current
 - Add a single configuration file for defaults and paths
 - Keep CLI flags as overrides (no breaking changes)
 - One feature: centralize configuration
@@ -297,9 +319,10 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - Fully offline operation
 - One feature: no API costs
 
-## What Gets Set Up (v0.5)
+## What Gets Set Up (v0.6)
 ```
 lennysan-rag-o-matic/
+├── CONFIGS.yaml           # Defaults for models, paths, retrieval
 ├── episodes/               # Lenny's transcripts (already here)
 ├── deannotes/              # Dean's articles and build stories
 │   ├── README.md          # Article index
@@ -367,13 +390,12 @@ MIT License - same as the source transcript corpus. Fork it, extend it, learn fr
 
 ## Contributing
 
-**v0.5 contributions welcome:**
+**v0.6 contributions welcome:**
 - Bug fixes
 - Better error messages
 - Mac compatibility improvements
 
 **Future versions seeking help:**
-- v0.6+: CONFIGS.yaml design and implementation
 - v0.75+: Web search fallback behavior and guardrails
 - v1.0+: Jupyter notebook examples
 - v2.5+: Additional corpus sources

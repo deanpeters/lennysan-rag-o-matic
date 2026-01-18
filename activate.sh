@@ -27,7 +27,7 @@ if [[ "$is_sourced" -ne 1 ]]; then
   exit 1
 fi
 
-echo "🚀 LennySan RAG-o-Matic v0.5"
+echo "🚀 LennySan RAG-o-Matic v0.6"
 echo ""
 
 # Activate virtual environment for this repo

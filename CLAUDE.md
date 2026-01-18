@@ -12,7 +12,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 4. **No vendor lock-in**: Architecture supports multiple LLM providers
 5. **Mac-first, then expand**: v0.1-2.5 Mac only, v3.0 adds Windows
 
-## Current Status: v0.5 (Model Switching)
+## Current Status: v0.6 (CONFIGS.yaml)
 
 **What exists:**
 - ✅ CLI query tool (`explore.py`)
@@ -20,10 +20,11 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - ✅ Setup automation (`setup.sh`)
 - ✅ ChromaDB for vector storage with metadata
 - ✅ Model switching across Anthropic + OpenAI
+- ✅ CONFIGS.yaml for defaults and paths
 - ✅ Source attribution (guest, title, date, YouTube links)
 - ✅ Mac-only support
 
-**What's explicitly NOT in v0.5:**
+**What's explicitly NOT in v0.6:**
 - ❌ Jupyter notebooks (that's v1.0)
 - ❌ Topic organization (that's v1.5)
 - ❌ Multiple corpuses (that's v2.5)
@@ -84,7 +85,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 
 **Do NOT remove this in future versions** - metadata preservation is foundational to the project's value proposition.
 
-## v0.5 Implementation Details
+## v0.6 Implementation Details
 
 ### What setup.sh Does
 1. **Preflight checks**: Verifies Mac OS, Git, Python 3.9+, ANTHROPIC_API_KEY
@@ -105,14 +106,15 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 7. **Stores in ChromaDB**: Persists to `data/chroma_db/` with metadata
 
 ### What explore.py Does
-1. **Validates environment**: Checks for the right API key based on `--model` and vector database
-2. **Loads vectorstore**: Connects to existing ChromaDB
-3. **Queries**: Converts natural language to vector search
-4. **Retrieves chunks**: Gets top 5 relevant chunks with metadata
-5. **Synthesizes answer**: Uses the selected model to generate response (direct + inferred + missing)
-6. **Formats sources**: Deduplicates episodes, shows top 3 with guest/title/date/URL
+1. **Loads config**: Reads `CONFIGS.yaml` for defaults and paths
+2. **Validates environment**: Checks for the right API key based on `--model` and vector database
+3. **Loads vectorstore**: Connects to existing ChromaDB
+4. **Queries**: Converts natural language to vector search
+5. **Retrieves chunks**: Gets top `k` relevant chunks with metadata
+6. **Synthesizes answer**: Uses the selected model to generate response (direct + inferred + missing)
+7. **Formats sources**: Deduplicates episodes, shows top sources per config
 
-### File Paths (Accurate as of v0.5)
+### File Paths (Accurate as of v0.6)
 - **Source transcripts**: `/episodes/{guest-name}/transcript.md` (from fork)
 - **Vector database**: `/data/chroma_db/` (generated, gitignored)
 - **Virtual environment**: `/.venv/` (generated, gitignored)
@@ -120,7 +122,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - **Config**: `/requirements.txt`, `/.gitignore` (in repo)
 - **Docs**: `/README.md`, `/CLAUDE.md`, `/GITLENNY.md` (in repo)
 
-### Cost Breakdown (v0.5)
+### Cost Breakdown (v0.6)
 - **Embeddings**: $0 (local model, no API calls)
 - **Indexing**: One-time, ~5-10 minutes compute time
 - **Per query**: ~$0.001-0.005 (Claude Haiku API)
@@ -154,12 +156,12 @@ lennysan-rag-o-matic/
 - CLI works with Claude Haiku
 - Single feature: basic RAG query loop
 
-**v0.5 - Model Switching** ✅ Current
+**v0.5 - Model Switching** ✅ Shipped
 - Add `--model` flag to explore.py
 - Support: claude-haiku, claude-sonnet-4, gpt-4o-mini, gpt-4o
 - Single feature: choose your model
 
-**v0.6 - CONFIGS.yaml**
+**v0.6 - CONFIGS.yaml** ✅ Current
 - Add a single configuration file for defaults and paths
 - Keep CLI flags as overrides
 - Single feature: centralize configuration
@@ -214,7 +216,10 @@ lennysan-rag-o-matic/
 Model switching is implemented in `explore.py` with `--model` and `--list-models`,
 plus Anthropic + OpenAI support and model-specific API key checks.
 
-Do not expand model configuration here; CONFIGS.yaml is reserved for v0.6.
+### For v0.6 (CONFIGS.yaml) — Completed
+
+CONFIGS.yaml is implemented as the default source of truth for models, providers,
+paths, retrieval settings, and output formatting. CLI flags override config values.
 
 ### For v1.0 (Jupyter)
 

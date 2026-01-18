@@ -8,6 +8,7 @@ import os
 import sys
 import yaml
 import logging
+import copy
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
@@ -17,20 +18,42 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
-# Setup logging
-os.makedirs('logs', exist_ok=True)
-log_file = f"logs/index_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
-
 logger = logging.getLogger(__name__)
+
+DEFAULT_CONFIG = {
+    "paths": {
+        "vector_db": "data/chroma_db",
+        "logs": "logs",
+        "corpora": [
+            {"name": "lenny", "path": "episodes"},
+        ],
+    },
+}
+
+
+def deep_merge(base: dict, override: dict) -> dict:
+    if not isinstance(override, dict):
+        return base
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            base[key] = deep_merge(base[key], value)
+        else:
+            base[key] = value
+    return base
+
+
+def load_config(path: str = "CONFIGS.yaml") -> dict:
+    config = copy.deepcopy(DEFAULT_CONFIG)
+    if not os.path.exists(path):
+        return config
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            user_config = yaml.safe_load(f) or {}
+        if isinstance(user_config, dict):
+            return deep_merge(config, user_config)
+    except Exception:
+        pass
+    return config
 
 
 def load_transcript_with_metadata(file_path: str) -> tuple[str, Dict[str, Any]]:
@@ -109,8 +132,31 @@ def load_all_transcripts(episodes_dir: str = "episodes") -> List[Document]:
 
 
 def main():
+    config = load_config()
+    paths = config.get("paths", {})
+    logs_dir = paths.get("logs", "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    log_file = f"{logs_dir}/index_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+
+    corpora = paths.get("corpora") or []
+    episodes_dir = "episodes"
+    if isinstance(corpora, list) and corpora:
+        first = corpora[0] or {}
+        episodes_dir = first.get("path", episodes_dir)
+
+    vector_db_path = paths.get("vector_db", "data/chroma_db")
+
     print("=" * 60)
-    print("LennySan RAG-o-Matic v0.1 - Indexing")
+    print("LennySan RAG-o-Matic v0.6 - Indexing")
     print("=" * 60)
     print()
     print(f"📋 Logging to: {log_file}")
@@ -122,8 +168,8 @@ def main():
     logger.info(f"Log file: {log_file}")
     
     # Check if episodes directory exists
-    if not os.path.exists("episodes"):
-        print("❌ Error: 'episodes' directory not found")
+    if not os.path.exists(episodes_dir):
+        print(f"❌ Error: episodes directory not found: {episodes_dir}")
         print("Make sure you're running this from the repo root")
         logger.error("Episodes directory not found")
         return 1
@@ -132,7 +178,7 @@ def main():
     print()
     
     try:
-        documents = load_all_transcripts()
+        documents = load_all_transcripts(episodes_dir)
     except Exception as e:
         print(f"❌ Error loading documents: {e}")
         logger.error(f"Failed to load documents: {e}", exc_info=True)
@@ -200,7 +246,7 @@ def main():
         vectorstore = Chroma.from_documents(
             documents=chunks,
             embedding=embeddings,
-            persist_directory="data/chroma_db"
+            persist_directory=vector_db_path
         )
         
         logger.info("Vector store created successfully")
@@ -211,7 +257,7 @@ def main():
         print("=" * 60)
         print(f"   📊 Indexed {len(chunks)} chunks from {len(documents)} episodes")
         print(f"   📋 Metadata preserved: guest, title, date, keywords, etc.")
-        print(f"   💾 Database stored in: data/chroma_db/")
+        print(f"   💾 Database stored in: {vector_db_path}")
         print()
         print("🎉 You're ready to explore!")
         print()

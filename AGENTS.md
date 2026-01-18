@@ -12,16 +12,16 @@ Build and evolve a low-barrier PM research tool that lets product managers explo
 - Maintain a “one feature per version” scope discipline.
 
 ## Current Release Target
-- Current: v0.5 (model switching)
-- Next planned: v0.6 (CONFIGS.yaml)
+- Current: v0.6 (CONFIGS.yaml)
+- Next planned: v0.75 (web fallback)
 
-## Golden Path Commands (v0.1)
+## Golden Path Commands (v0.6)
 - Setup + index:
   - `./setup.sh`
 - Query:
   - `python explore.py "your question here"`
 
-## Repo Map (v0.1)
+## Repo Map (v0.6)
 - `setup.sh`
   - Preflight checks, creates `.venv`, installs deps, builds index into `data/chroma_db/`
 - `index_corpus.py`
@@ -52,13 +52,13 @@ Implementation requirements:
 
 Do not remove or bypass this system. It is foundational to trust, context, and deep-dive workflows.
 
-## Technical Choices (v0.5) — Keep Unless Upgrading Deliberately
+## Technical Choices (v0.6) — Keep Unless Upgrading Deliberately
 - Vector store: ChromaDB (local)
 - Embeddings: `sentence-transformers/all-MiniLM-L6-v2` (local/free)
 - LLMs: Claude Haiku / Claude Sonnet 4 / GPT‑4o mini / GPT‑4o (via --model)
 - Orchestration: LangChain + LCEL (enables later provider switching)
 
-## Cost Expectations (v0.1)
+## Cost Expectations (v0.6)
 - Embeddings/indexing: $0 API spend (local embeddings)
 - Indexing: one-time local compute (minutes)
 - Per query: low-cost LLM call (order of thousandths of a dollar)

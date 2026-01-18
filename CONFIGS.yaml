@@ -1,0 +1,68 @@
+version: "0.6"
+
+# Defaults for CLI when no flags are provided
+defaults:
+  provider: "anthropic"
+  model: "haiku"
+  response_format: "direct_inferred_missing"
+
+# Provider registry (future‑proof for more APIs)
+providers:
+  anthropic:
+    api_key_env: "ANTHROPIC_API_KEY"
+    display_name: "Anthropic"
+  openai:
+    api_key_env: "OPENAI_API_KEY"
+    display_name: "OpenAI"
+
+# Model registry (human‑friendly aliases)
+models:
+  haiku:
+    provider: "anthropic"
+    id: "claude-haiku-4-5-20251001"
+    label: "Claude Haiku 4.5 (cheapest)"
+    status: "active"
+  sonnet-4:
+    provider: "anthropic"
+    id: "claude-sonnet-4-20250514"
+    label: "Claude Sonnet 4 (balanced)"
+    status: "active"
+  gpt-4o-mini:
+    provider: "openai"
+    id: "gpt-4o-mini"
+    label: "GPT-4o mini (cheapest OpenAI)"
+    status: "active"
+  gpt-4o:
+    provider: "openai"
+    id: "gpt-4o"
+    label: "GPT-4o (quality OpenAI)"
+    status: "active"
+
+# Filesystem paths
+paths:
+  vector_db: "data/chroma_db"
+  logs: "logs"
+  corpora:
+    - name: "lenny"
+      path: "episodes"
+  topic_index:
+    path: "index"
+  notebooks:
+    root: "notebooks"
+    topics_root: "notebooks/topics"
+
+# Retrieval defaults
+retrieval:
+  search_type: "mmr"
+  k: 8
+  fetch_k: 24
+
+# Output formatting
+output:
+  max_sources: 3
+  response_format: "direct_inferred_missing"
+
+# Feature flags (future‑safe, off by default)
+features:
+  web_fallback: false
+  notebooks: false

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LennySan RAG-o-Matic v0.1
+LennySan RAG-o-Matic v0.6
 Simple CLI for querying Lenny's podcast corpus with metadata attribution
 """
 
@@ -8,8 +8,10 @@ import sys
 import os
 import warnings
 import argparse
+import copy
+import yaml
 
-# Suppress LangChain deprecation warnings for v0.1
+# Suppress LangChain deprecation warnings for v0.6
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 warnings.filterwarnings('ignore', message='.*was deprecated.*')
 try:
@@ -26,69 +28,147 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-MODEL_CATALOG = {
-    "haiku": {
+DEFAULT_CONFIG = {
+    "version": "0.6",
+    "defaults": {
         "provider": "anthropic",
-        "model": "claude-haiku-4-5-20251001",
-        "label": "Claude Haiku 4.5 (cheapest)",
+        "model": "haiku",
+        "response_format": "direct_inferred_missing",
     },
-    "sonnet-4": {
-        "provider": "anthropic",
-        "model": "claude-sonnet-4-20250514",
-        "label": "Claude Sonnet 4 (balanced)",
+    "providers": {
+        "anthropic": {
+            "api_key_env": "ANTHROPIC_API_KEY",
+            "display_name": "Anthropic",
+        },
+        "openai": {
+            "api_key_env": "OPENAI_API_KEY",
+            "display_name": "OpenAI",
+        },
     },
-    "gpt-4o-mini": {
-        "provider": "openai",
-        "model": "gpt-4o-mini",
-        "label": "GPT-4o mini (cheapest OpenAI)",
+    "models": {
+        "haiku": {
+            "provider": "anthropic",
+            "id": "claude-haiku-4-5-20251001",
+            "label": "Claude Haiku 4.5 (cheapest)",
+            "status": "active",
+        },
+        "sonnet-4": {
+            "provider": "anthropic",
+            "id": "claude-sonnet-4-20250514",
+            "label": "Claude Sonnet 4 (balanced)",
+            "status": "active",
+        },
+        "gpt-4o-mini": {
+            "provider": "openai",
+            "id": "gpt-4o-mini",
+            "label": "GPT-4o mini (cheapest OpenAI)",
+            "status": "active",
+        },
+        "gpt-4o": {
+            "provider": "openai",
+            "id": "gpt-4o",
+            "label": "GPT-4o (quality OpenAI)",
+            "status": "active",
+        },
     },
-    "gpt-4o": {
-        "provider": "openai",
-        "model": "gpt-4o",
-        "label": "GPT-4o (quality OpenAI)",
+    "paths": {
+        "vector_db": "data/chroma_db",
+    },
+    "retrieval": {
+        "search_type": "mmr",
+        "k": 8,
+        "fetch_k": 24,
+    },
+    "output": {
+        "max_sources": 3,
+        "response_format": "direct_inferred_missing",
     },
 }
 
 
-def print_model_list():
+def deep_merge(base: dict, override: dict) -> dict:
+    if not isinstance(override, dict):
+        return base
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            base[key] = deep_merge(base[key], value)
+        else:
+            base[key] = value
+    return base
+
+
+def load_config(path: str = "CONFIGS.yaml") -> dict:
+    config = copy.deepcopy(DEFAULT_CONFIG)
+    if not os.path.exists(path):
+        return config
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            user_config = yaml.safe_load(f) or {}
+        if isinstance(user_config, dict):
+            return deep_merge(config, user_config)
+    except Exception:
+        pass
+    return config
+
+
+def build_model_catalog(config: dict) -> dict:
+    providers = config.get("providers", {})
+    models = config.get("models", {})
+    catalog = {}
+    for key, data in models.items():
+        provider = data.get("provider")
+        model_id = data.get("id")
+        if not provider or not model_id:
+            continue
+        label = data.get("label")
+        if not label:
+            display = providers.get(provider, {}).get("display_name", provider)
+            label = f"{display} ({model_id})"
+        catalog[key] = {
+            "provider": provider,
+            "model": model_id,
+            "label": label,
+        }
+    return catalog
+
+
+def print_model_list(model_catalog: dict):
     print("Available models:")
-    for key, meta in MODEL_CATALOG.items():
+    for key, meta in model_catalog.items():
         print(f"  {key:12} -> {meta['model']} ({meta['label']})")
 
 
-def build_llm(model_key: str):
-    meta = MODEL_CATALOG[model_key]
+def build_llm(model_key: str, model_catalog: dict, providers: dict):
+    meta = model_catalog[model_key]
     provider = meta["provider"]
     model_name = meta["model"]
+    provider_meta = providers.get(provider, {})
+    api_key_env = provider_meta.get("api_key_env")
+
+    if not api_key_env:
+        print(f"❌ Error: Provider '{provider}' is missing api_key_env in CONFIGS.yaml")
+        return None, None
+
+    if not os.environ.get(api_key_env):
+        print(f"❌ Error: {api_key_env} not found")
+        print()
+        print("Set your API key:")
+        print(f"  export {api_key_env}='sk-...'")
+        print()
+        print("Then reload your shell:")
+        print("  source ~/.bashrc  (or source ~/.zshrc)")
+        return None, None
 
     if provider == "anthropic":
-        if not os.environ.get("ANTHROPIC_API_KEY"):
-            print("❌ Error: ANTHROPIC_API_KEY not found")
-            print()
-            print("Set your API key:")
-            print("  export ANTHROPIC_API_KEY='sk-ant-...'")
-            print()
-            print("Then reload your shell:")
-            print("  source ~/.bashrc  (or source ~/.zshrc)")
-            return None, None
         return ChatAnthropic(model=model_name, temperature=0), meta
 
     if provider == "openai":
-        if not os.environ.get("OPENAI_API_KEY"):
-            print("❌ Error: OPENAI_API_KEY not found")
-            print()
-            print("Set your API key:")
-            print("  export OPENAI_API_KEY='sk-...'")
-            print()
-            print("Then reload your shell:")
-            print("  source ~/.bashrc  (or source ~/.zshrc)")
-            return None, None
         return ChatOpenAI(model=model_name, temperature=0), meta
 
     print(f"❌ Error: Unsupported provider: {provider}")
     return None, None
 
-def format_sources(docs):
+def format_sources(docs, max_sources: int = 3):
     """Format source documents with metadata into readable citations."""
     sources = []
     seen_episodes = set()
@@ -110,7 +190,7 @@ def format_sources(docs):
                 citation += f"\n  {youtube_url}"
             sources.append(citation)
     
-    return "\n".join(sources[:3])  # Show top 3 sources
+    return "\n".join(sources[:max_sources])
 
 
 def format_docs(docs):
@@ -119,6 +199,14 @@ def format_docs(docs):
 
 
 def main():
+    config = load_config()
+    model_catalog = build_model_catalog(config)
+    providers = config.get("providers", {})
+    model_choices = sorted(model_catalog.keys())
+    default_model = config.get("defaults", {}).get("model", "haiku")
+    if default_model not in model_catalog and model_choices:
+        default_model = model_choices[0]
+
     parser = argparse.ArgumentParser(
         description="Query Lenny's podcast corpus with model switching",
         formatter_class=argparse.RawTextHelpFormatter,
@@ -130,12 +218,9 @@ def main():
     )
     parser.add_argument(
         "--model",
-        choices=sorted(MODEL_CATALOG.keys()),
-        default="haiku",
-        help=(
-            "Model to use. Choices:\n"
-            "  haiku | sonnet-4 | gpt-4o-mini | gpt-4o"
-        ),
+        choices=model_choices,
+        default=default_model,
+        help="Model to use (see --list-models for options)",
     )
     parser.add_argument(
         "--list-models",
@@ -146,7 +231,7 @@ def main():
     args = parser.parse_args()
 
     if args.list_models:
-        print_model_list()
+        print_model_list(model_catalog)
         return 0
 
     if not args.question:
@@ -154,7 +239,8 @@ def main():
         return 1
     
     # Check if vector DB exists
-    if not os.path.exists("data/chroma_db"):
+    vector_db_path = config.get("paths", {}).get("vector_db", "data/chroma_db")
+    if not os.path.exists(vector_db_path):
         print("❌ Error: Vector database not found")
         print()
         print("Run setup first:")
@@ -176,28 +262,46 @@ def main():
         
         # Load vector store
         vectorstore = Chroma(
-            persist_directory="data/chroma_db",
+            persist_directory=vector_db_path,
             embedding_function=embeddings
         )
         
-        # Create retriever (MMR improves diversity; higher k improves recall)
+        retrieval = config.get("retrieval", {})
         retriever = vectorstore.as_retriever(
-            search_type="mmr",
-            search_kwargs={"k": 8, "fetch_k": 24}
+            search_type=retrieval.get("search_type", "mmr"),
+            search_kwargs={
+                "k": retrieval.get("k", 8),
+                "fetch_k": retrieval.get("fetch_k", 24),
+            },
         )
         
-        llm, model_meta = build_llm(args.model)
+        llm, model_meta = build_llm(args.model, model_catalog, providers)
         if llm is None:
             return 1
         
         # Create prompt template
-        template = """You are a helpful assistant answering questions about Lenny Rachitsky's podcast.
+        response_format = config.get("output", {}).get(
+            "response_format", "direct_inferred_missing"
+        )
+        if response_format == "direct_inferred_missing":
+            template = """You are a helpful assistant answering questions about Lenny Rachitsky's podcast.
 Use the following context from podcast transcripts to answer the question.
 Respond in three sections with these headings:
 Direct answer:
 Indirect but relevant insights (inferred):
 What's missing:
 In the Direct answer, give a best‑effort summary grounded in the context. If the context is weak, say so, but still summarize any relevant details you can find.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+        else:
+            template = """You are a helpful assistant answering questions about Lenny Rachitsky's podcast.
+Use the following context from podcast transcripts to answer the question.
+If you don't know the answer based on the context, just say so - don't make things up.
 
 Context:
 {context}
@@ -232,9 +336,10 @@ Answer:"""
         print()
         
         # Show sources with metadata
+        max_sources = config.get("output", {}).get("max_sources", 3)
         if source_docs:
             print("📚 Sources:")
-            print(format_sources(source_docs))
+            print(format_sources(source_docs, max_sources=max_sources))
             print()
         
         print(f"ℹ️  Using {model_meta['model']} ({model_meta['label']})")
@@ -247,7 +352,7 @@ Answer:"""
         print(f"❌ Error: {e}")
         print()
         print("If you're seeing API errors, check:")
-        print("  - Your ANTHROPIC_API_KEY is set correctly")
+        print("  - The correct API key is set for your selected model")
         print("  - You have API credits available")
         print()
         return 1

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# LennySan RAG-o-Matic v0.1 Setup Script
-# Proof of Life: Get the basic RAG pipeline working on Mac
+# LennySan RAG-o-Matic v0.6 Setup Script
+# CONFIGS.yaml: Centralize defaults and paths
 
 set -e  # Exit on any error
 
@@ -15,7 +15,7 @@ LOG_FILE="logs/setup_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "======================================"
-echo "LennySan RAG-o-Matic v0.1 Setup"
+echo "LennySan RAG-o-Matic v0.6 Setup"
 echo "======================================"
 echo ""
 echo "📋 Logging to: $LOG_FILE"
