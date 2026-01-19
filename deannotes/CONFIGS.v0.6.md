@@ -108,8 +108,10 @@ features:
 
 web_search:
   mode: "on"
-  provider: "serper"
+  provider: "api"  # api | docker
   endpoint: "https://google.serper.dev/search"
+  docker_endpoint: "http://localhost:8080/search"
+  allow_api_fallback: false
   api_key_env: "SERPER_API_KEY"
   max_results: 5
   timeout_sec: 10

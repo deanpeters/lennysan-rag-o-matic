@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LennySan RAG-o-Matic v0.6
+LennySan RAG-o-Matic v0.8
 Simple CLI for querying Lenny's podcast corpus with metadata attribution
 """
 
@@ -12,6 +12,9 @@ import copy
 import json
 import urllib.request
 import urllib.error
+import urllib.parse
+import shutil
+import subprocess
 import yaml
 
 # Suppress LangChain deprecation warnings for v0.6
@@ -31,7 +34,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 DEFAULT_CONFIG = {
-    "version": "0.6",
+    "version": "0.8",
     "defaults": {
         "provider": "anthropic",
         "model": "haiku",
@@ -91,8 +94,10 @@ DEFAULT_CONFIG = {
     },
     "web_search": {
         "mode": "on",
-        "provider": "serper",
+        "provider": "api",
         "endpoint": "https://google.serper.dev/search",
+        "docker_endpoint": "http://localhost:8080/search",
+        "allow_api_fallback": False,
         "api_key_env": "SERPER_API_KEY",
         "max_results": 5,
         "timeout_sec": 10,
@@ -109,6 +114,18 @@ def deep_merge(base: dict, override: dict) -> dict:
         else:
             base[key] = value
     return base
+
+
+def coerce_bool(value, default=False):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        lowered = value.strip().lower()
+        if lowered in ("true", "yes", "on", "1"):
+            return True
+        if lowered in ("false", "no", "off", "0"):
+            return False
+    return default
 
 
 def load_config(path: str = "CONFIGS.yaml") -> dict:
@@ -154,10 +171,26 @@ def print_model_list(model_catalog: dict):
 
 def web_search_config(config: dict) -> dict:
     ws = config.get("web_search", {}) or {}
+    provider = ws.get("provider", "api")
+    if isinstance(provider, str):
+        provider = provider.lower()
+    if provider in ("serper", "api"):
+        provider = "api"
+    elif provider in ("searxng", "searx", "docker"):
+        provider = "docker"
+    docker_endpoint = ws.get("docker_endpoint", "http://localhost:8080/search")
+    env_endpoint = os.environ.get("SEARXNG_ENDPOINT")
+    env_port = os.environ.get("SEARXNG_PORT")
+    if env_endpoint:
+        docker_endpoint = env_endpoint
+    elif env_port:
+        docker_endpoint = f"http://localhost:{env_port}"
     return {
         "mode": ws.get("mode", "on"),
-        "provider": ws.get("provider", "serper"),
+        "provider": provider,
         "endpoint": ws.get("endpoint", "https://google.serper.dev/search"),
+        "docker_endpoint": docker_endpoint,
+        "allow_api_fallback": coerce_bool(ws.get("allow_api_fallback", False), False),
         "api_key_env": ws.get("api_key_env", "SERPER_API_KEY"),
         "max_results": int(ws.get("max_results", 5)),
         "timeout_sec": int(ws.get("timeout_sec", 10)),
@@ -190,6 +223,107 @@ def search_serper(query: str, cfg: dict) -> list[dict]:
         if title or snippet or link:
             results.append({"title": title, "link": link, "snippet": snippet})
     return results
+
+
+def build_searxng_url(endpoint: str, query: str) -> str:
+    base = (endpoint or "").strip()
+    if not base:
+        base = "http://localhost:8080/search"
+    if base.endswith("/search"):
+        url = base
+    else:
+        url = base.rstrip("/") + "/search"
+    params = urllib.parse.urlencode({"q": query, "format": "json"})
+    return f"{url}?{params}"
+
+
+def search_searxng(query: str, cfg: dict) -> tuple[list[dict], str]:
+    url = build_searxng_url(cfg.get("docker_endpoint"), query)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/plain,*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "http://localhost:8080/",
+        "X-Forwarded-For": "127.0.0.1",
+        "X-Real-IP": "127.0.0.1",
+    }
+    req = urllib.request.Request(url, headers=headers, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=cfg["timeout_sec"]) as resp:
+            body = resp.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as exc:
+        if exc.code == 403:
+            return [], "HTTP 403 from SearXNG (bot detection)"
+        return [], f"HTTP {exc.code} from SearXNG"
+    except urllib.error.URLError as exc:
+        return [], f"Could not reach SearXNG ({exc.reason})"
+    except Exception as exc:
+        return [], f"Failed to reach SearXNG ({exc})"
+
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError:
+        snippet = body.strip().replace("\n", " ")[:200]
+        return [], f"Non-JSON response from SearXNG: {snippet}"
+
+    results = []
+    for item in (data.get("results") or [])[: cfg["max_results"]]:
+        title = item.get("title") or ""
+        link = item.get("url") or ""
+        snippet = item.get("content") or item.get("snippet") or ""
+        if title or snippet or link:
+            results.append({"title": title, "link": link, "snippet": snippet})
+    if not results:
+        return [], "SearXNG returned zero results"
+    return results, ""
+
+
+def docker_available(timeout_sec: int = 5) -> tuple[bool, str]:
+    if not shutil.which("docker"):
+        return False, "Docker CLI not found"
+    try:
+        subprocess.run(
+            ["docker", "ps"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+            timeout=timeout_sec,
+        )
+        return True, ""
+    except subprocess.TimeoutExpired:
+        return False, "Docker is not responding"
+    except subprocess.CalledProcessError:
+        return False, "Docker is not running"
+    except OSError:
+        return False, "Docker is not available"
+
+
+def print_docker_help(reason: str):
+    if reason == "Docker CLI not found":
+        print("    Install Docker Desktop and start it once.")
+        return
+    print("    Start Docker Desktop:")
+    print("      macOS: open -a Docker")
+    print("      Windows: open Docker Desktop")
+    print("    Then start SearXNG:")
+    print("      docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
+    print("    If you already created the container:")
+    print("      docker start searxng")
+
+
+def run_web_search(query: str, cfg: dict, api_key_value) -> tuple[list[dict], str]:
+    provider = cfg.get("provider")
+    if provider == "api":
+        if not api_key_value:
+            return [], "API key missing"
+        payload_cfg = dict(cfg)
+        payload_cfg["api_key_env_value"] = api_key_value
+        return search_serper(query, payload_cfg), ""
+    if provider == "docker":
+        return search_searxng(query, cfg)
+    return [], f"Unsupported provider '{provider}'"
 
 
 def format_web_results(results: list[dict]) -> str:
@@ -371,6 +505,12 @@ def main():
         default=web_search_default_value,
         help="Web search fallback (default from CONFIGS.yaml)",
     )
+    parser.add_argument(
+        "--web-provider",
+        choices=["api", "docker"],
+        default=None,
+        help="Web search provider override (api or docker)",
+    )
 
     args = parser.parse_args()
 
@@ -384,14 +524,56 @@ def main():
 
     verbose = args.verbose == "on"
     web_search_mode = args.web_search
+    post_run_warnings = []
     web_search_requested = web_search_mode != "off"
     web_search_force = web_search_mode == "always"
     web_search_enabled = web_search_requested
+    if args.web_provider:
+        web_cfg["provider"] = args.web_provider
+    provider = web_cfg.get("provider", "api")
+    provider_label = provider.upper() if isinstance(provider, str) else "API"
     api_key_env = web_cfg.get("api_key_env", "SERPER_API_KEY")
-    api_key_value = os.environ.get(api_key_env)
-    if web_search_enabled and not api_key_value:
-        print(f"⚠️  Web search disabled: {api_key_env} not found")
-        web_search_enabled = False
+    api_key_value = None
+    if web_search_enabled:
+        if provider == "api":
+            api_key_value = os.environ.get(api_key_env)
+            if not api_key_value:
+                post_run_warnings.append(f"Web search disabled: {api_key_env} not found")
+                web_search_enabled = False
+        elif provider == "docker":
+            ok, reason = docker_available(timeout_sec=web_cfg.get("timeout_sec", 10))
+            if not ok:
+                allow_api_fallback = web_cfg.get("allow_api_fallback", False)
+                api_key_value = os.environ.get(api_key_env)
+                if allow_api_fallback and api_key_value:
+                    post_run_warnings.append("Docker not available; falling back to API search (costs apply).")
+                    post_run_warnings.append("To enable Docker search, use the command below:")
+                    post_run_warnings.append("  macOS: open -a Docker")
+                    post_run_warnings.append("  Windows: open Docker Desktop")
+                    post_run_warnings.append("  docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
+                    post_run_warnings.append("  docker start searxng  (if already created)")
+                    provider = "api"
+                    provider_label = "API"
+                    web_cfg["provider"] = "api"
+                    web_search_enabled = True
+                else:
+                    if reason:
+                        post_run_warnings.append(f"Web search disabled: Docker is not available ({reason})")
+                    else:
+                        post_run_warnings.append("Web search disabled: Docker is not available")
+                    post_run_warnings.append("Start Docker Desktop, then use:")
+                    post_run_warnings.append("  macOS: open -a Docker")
+                    post_run_warnings.append("  Windows: open Docker Desktop")
+                    post_run_warnings.append("  docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
+                    post_run_warnings.append("  docker start searxng  (if already created)")
+                    if allow_api_fallback:
+                        if not api_key_value:
+                            post_run_warnings.append(f"API fallback disabled: {api_key_env} not found")
+                    post_run_warnings.append("Install and start Docker Desktop, or switch provider to api.")
+                    web_search_enabled = False
+        else:
+            post_run_warnings.append(f"Web search disabled: unsupported provider '{provider}'")
+            web_search_enabled = False
 
     def vprint(*print_args, **print_kwargs):
         if verbose:
@@ -413,7 +595,7 @@ def main():
     vprint(f"❓ Question: {query}")
     if web_search_requested:
         mode_label = "FORCED" if web_search_force else "AUTO"
-        vprint(f"🌐 Web search fallback: {'ON' if web_search_enabled else 'OFF'} ({mode_label})")
+        vprint(f"🌐 Web search fallback: {'ON' if web_search_enabled else 'OFF'} ({mode_label}, {provider_label})")
     vprint()
     
     try:
@@ -486,13 +668,12 @@ Answer:"""
 
         answer = run_answer(doc_context)
         web_results = []
+        web_error = ""
 
         if web_search_enabled:
             if web_search_force:
                 vprint("🌐 Running web search (forced)...")
-                web_cfg["api_key_env_value"] = api_key_value
-                if web_cfg.get("provider") == "serper":
-                    web_results = search_serper(query, web_cfg)
+                web_results, web_error = run_web_search(query, web_cfg, api_key_value)
                 if web_results:
                     web_context = format_web_results(web_results)
                     combined_context = doc_context + "\n\nWeb results:\n" + web_context
@@ -502,9 +683,7 @@ Answer:"""
             else:
                 if should_web_fallback(answer):
                     vprint("🌐 Running web search fallback...")
-                    web_cfg["api_key_env_value"] = api_key_value
-                    if web_cfg.get("provider") == "serper":
-                        web_results = search_serper(query, web_cfg)
+                    web_results, web_error = run_web_search(query, web_cfg, api_key_value)
                     if web_results:
                         web_context = format_web_results(web_results)
                         combined_context = doc_context + "\n\nWeb results:\n" + web_context
@@ -530,6 +709,15 @@ Answer:"""
         if web_results:
             print("🌐 Web Sources:")
             print(format_web_sources(web_results))
+            print()
+        if post_run_warnings:
+            print("⚠️  Web search notice:")
+            for line in post_run_warnings:
+                print(f"  {line}")
+            print()
+        if verbose and web_search_requested and web_search_enabled and not web_results and web_error:
+            print("🔎 Web search diagnostics:")
+            print(f"  {web_error}")
             print()
         
         vprint(f"ℹ️  Using {model_meta['model']} ({model_meta['label']})")
