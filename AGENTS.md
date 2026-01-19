@@ -51,6 +51,9 @@ Session logs:
 - `deannotes/SESSION.0.75.LOG.md`
 - `deannotes/SESSION_LOG_PROMPT.md`
 
+PM-facing summary:
+- `deannotes/WHATS_NEW.v0.75.md`
+
 If code conflicts with a contract, the contract wins.
 
 ## Upstream Transcripts Fork + PR Workflow

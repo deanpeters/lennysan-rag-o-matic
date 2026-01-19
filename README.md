@@ -64,10 +64,14 @@ If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No 
 
 **Release notes:**
 - `releasenotes/RELEASE_v0.75.md`
+- `releasenotes/RELEASE_v0.75.GITHUB.md`
 - `releasenotes/RELEASE_v0.62.md`
 - `releasenotes/RELEASE_v0.6.md`
 - `releasenotes/RELEASE_v0.5.md`
 - `releasenotes/RELEASE_v0.1.md`
+
+**What’s new (PM‑friendly):**
+- `deannotes/WHATS_NEW.v0.75.md`
 
 **What this is NOT yet:**
 - Not Jupyter notebooks (v1.0)

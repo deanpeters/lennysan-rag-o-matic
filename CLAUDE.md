@@ -48,6 +48,9 @@ Session logs are historical evidence and teaching artifacts:
 - `deannotes/SESSION.0.75.LOG.md`
 - `deannotes/SESSION_LOG_PROMPT.md`
 
+PM-facing summary:
+- `deannotes/WHATS_NEW.v0.75.md`
+
 ## Architecture Decisions (v0.1)
 
 ### Why ChromaDB?
