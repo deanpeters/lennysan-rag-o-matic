@@ -48,47 +48,47 @@ This README is the front door. The docs are the house. Each one exists because i
 
 ### docs/GETTING_STARTED.md
 
-This is the “value before your coffee gets cold” path. It gets you from clone to first cited answer with the fewest moving parts, the fewest opportunities for your machine to become an obstacle course, and the most respect for your time. If the repo is going to earn your trust, it earns it here.
+This is the “value before your coffee gets cold” path. It gets you from clone to first cited answer with the fewest moving parts, the fewest opportunities for your machine to become an obstacle course, and the most respect for your time. If the repo is going to earn your trust, it earns it here. ☞  [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md).
 
 ### docs/HOW_IT_WORKS.md
 
-This is the “no wizards, just wires” explanation of the system. It shows the three moving parts, why metadata is non-negotiable, how the retrieval-to-answer loop works, and why the output format is designed to make gaps obvious. Read it once and you’ll be better at using every AI tool you touch, not just this repo.
+This is the “no wizards, just wires” explanation of the system. It shows the three moving parts, why metadata is non-negotiable, how the retrieval-to-answer loop works, and why the output format is designed to make gaps obvious. Read it once and you’ll be better at using every AI tool you touch, not just this repo. ☞  [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
 
 ### docs/CONFIGURATION.md
 
-This is how you change behavior without changing code. `CONFIGS.yaml` is the single source of truth for defaults, which means you can tune model choice, retrieval behavior, and web-search knobs like a sane product person instead of a sleep-deprived spelunker. CLI flags override anything at runtime, but this doc is how you make “your normal” stable and repeatable.
+This is how you change behavior without changing code. `CONFIGS.yaml` is the single source of truth for defaults, which means you can tune model choice, retrieval behavior, and web-search knobs like a sane product person instead of a sleep-deprived spelunker. CLI flags override anything at runtime, but this doc is how you make “your normal” stable and repeatable. ☞  [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 ### docs/WEB_SEARCH.md
 
-This is optional power with a safety latch. Web search only runs when you explicitly enable it, and this doc explains when it triggers, which provider you’re using, and what tradeoffs you’re accepting when you let “the internet” into your answer loop. It also gives you the escape hatch: if web search gets annoying, turn it off and keep learning.
+This is optional power with a safety latch. Web search only runs when you explicitly enable it, and this doc explains when it triggers, which provider you’re using, and what tradeoffs you’re accepting when you let “the internet” into your answer loop. It also gives you the escape hatch: if web search gets annoying, turn it off and keep learning. ☞  [docs/WEB_SEARCH.md](docs/WEB_SEARCH.md).
 
 ### docs/DOCKER_SEARCH.md
 
-This is the advanced path for running a local search backend via Docker, delivered the only acceptable way: one button, no drama. It tells you how to run it, how to change ports, and how to recover when Docker does that thing where it pretends it’s the main character. Useful, powerful, occasionally fussy. Like many senior stakeholders.
+This is the advanced path for running a local search backend via Docker, delivered the only acceptable way: one button, no drama. It tells you how to run it, how to change ports, and how to recover when Docker does that thing where it pretends it’s the main character. Useful, powerful, occasionally fussy. Like many senior stakeholders. ☞  [docs/DOCKER_SEARCH.md](docs/DOCKER_SEARCH.md).
 
 ### docs/COSTS.md
 
-This is the adult supervision doc. It tells you what actually costs money, what costs almost nothing, and how to keep experiments cheap enough to stay fun. If you’ve ever looked at an AI bill and felt your soul leave your body, read this before you start cranking knobs.
+This is the adult supervision doc. It tells you what actually costs money, what costs almost nothing, and how to keep experiments cheap enough to stay fun. If you’ve ever looked at an AI bill and felt your soul leave your body, read this before you start cranking knobs. ☞ [docs/COSTS.md](docs/COSTS.md).
 
 ### docs/TROUBLESHOOTING.md
 
-This is the antidote to spiraling. Missing keys, wrong model provider, too much output, Docker weirdness, “python not found,” setup failures, the usual gremlins. It’s written for PMs who want fixes, not a surprise graduate degree in toolchains.
+This is the antidote to spiraling. Missing keys, wrong model provider, too much output, Docker weirdness, “python not found,” setup failures, the usual gremlins. It’s written for PMs who want fixes, not a surprise graduate degree in toolchains. ☞ [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 ### docs/ROADMAP.md
 
-This is how we avoid scope creep, thrash, and “just one more feature” death spirals. One focused capability per version, with a clear runway from proof-of-life to notebooks and beyond. If you want to understand what’s next without starting a religion over it, this is the file.
+This is how we avoid scope creep, thrash, and “just one more feature” death spirals. One focused capability per version, with a clear runway from proof-of-life to notebooks and beyond. If you want to understand what’s next without starting a religion over it, this is the file. ☞ [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### docs/RELEASES.md
 
-This is the human-readable history of what shipped and where to find the details. It points you to release notes and the PM-friendly “what’s new” narrative, so you can track capability changes without spelunking commits like an archaeologist.
+This is the human-readable history of what shipped and where to find the details. It points you to release notes and the PM-friendly “what’s new” narrative, so you can track capability changes without spelunking commits like an archaeologist. ☞ [docs/RELEASES.md](docs/RELEASES.md).
 
 ### docs/CONTRACTS_AND_LOGS.md
 
-This is where the repo becomes a teaching tool instead of “some scripts.” Contracts capture intended behavior so the tool doesn’t drift into accidental chaos. Session logs capture the real decisions and tradeoffs, so you can learn from the work, not just admire the outcome. If you care about trust, traceability, and governance, this is the spine.
+This is where the repo becomes a teaching tool instead of “some scripts.” Contracts capture intended behavior so the tool doesn’t drift into accidental chaos. Session logs capture the real decisions and tradeoffs, so you can learn from the work, not just admire the outcome. If you care about trust, traceability, and governance, this is the spine. ☞ [docs/CONTRACTS_AND_LOGS.md](docs/CONTRACTS_AND_LOGS.md).
 
 ### docs/DECISIONS.md
 
-This is the decision log for big bets only. It exists so future you doesn’t have to play detective, and so contributors don’t accidentally relitigate the same core choices every few weeks. If a change affects trust, cost, or behavior, it belongs here with the “why” written down.
+This is the decision log for big bets only. It exists so future you doesn’t have to play detective, and so contributors don’t accidentally relitigate the same core choices every few weeks. If a change affects trust, cost, or behavior, it belongs here with the “why” written down. ☞ [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Current status: v0.75
 
