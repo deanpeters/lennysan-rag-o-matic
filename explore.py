@@ -9,6 +9,9 @@ import os
 import warnings
 import argparse
 import copy
+import json
+import urllib.request
+import urllib.error
 import yaml
 
 # Suppress LangChain deprecation warnings for v0.6
@@ -26,7 +29,6 @@ from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
 
 DEFAULT_CONFIG = {
     "version": "0.6",
@@ -34,6 +36,7 @@ DEFAULT_CONFIG = {
         "provider": "anthropic",
         "model": "haiku",
         "response_format": "direct_inferred_missing",
+        "verbose": True,
     },
     "providers": {
         "anthropic": {
@@ -82,6 +85,17 @@ DEFAULT_CONFIG = {
     "output": {
         "max_sources": 3,
         "response_format": "direct_inferred_missing",
+    },
+    "features": {
+        "web_search": True,
+    },
+    "web_search": {
+        "mode": "on",
+        "provider": "serper",
+        "endpoint": "https://google.serper.dev/search",
+        "api_key_env": "SERPER_API_KEY",
+        "max_results": 5,
+        "timeout_sec": 10,
     },
 }
 
@@ -136,6 +150,117 @@ def print_model_list(model_catalog: dict):
     print("Available models:")
     for key, meta in model_catalog.items():
         print(f"  {key:12} -> {meta['model']} ({meta['label']})")
+
+
+def web_search_config(config: dict) -> dict:
+    ws = config.get("web_search", {}) or {}
+    return {
+        "mode": ws.get("mode", "on"),
+        "provider": ws.get("provider", "serper"),
+        "endpoint": ws.get("endpoint", "https://google.serper.dev/search"),
+        "api_key_env": ws.get("api_key_env", "SERPER_API_KEY"),
+        "max_results": int(ws.get("max_results", 5)),
+        "timeout_sec": int(ws.get("timeout_sec", 10)),
+    }
+
+
+def search_serper(query: str, cfg: dict) -> list[dict]:
+    payload = json.dumps({"q": query}).encode("utf-8")
+    req = urllib.request.Request(
+        cfg["endpoint"],
+        data=payload,
+        headers={
+            "Content-Type": "application/json",
+            "X-API-KEY": cfg["api_key_env_value"],
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=cfg["timeout_sec"]) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError):
+        return []
+
+    results = []
+    organic = data.get("organic", []) or []
+    for item in organic[: cfg["max_results"]]:
+        title = item.get("title") or ""
+        link = item.get("link") or ""
+        snippet = item.get("snippet") or ""
+        if title or snippet or link:
+            results.append({"title": title, "link": link, "snippet": snippet})
+    return results
+
+
+def format_web_results(results: list[dict]) -> str:
+    lines = []
+    for i, item in enumerate(results, start=1):
+        title = item.get("title", "").strip()
+        link = item.get("link", "").strip()
+        snippet = item.get("snippet", "").strip()
+        line = f"{i}. {title}"
+        if snippet:
+            line += f" — {snippet}"
+        if link:
+            line += f" ({link})"
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def format_web_sources(results: list[dict]) -> str:
+    lines = []
+    for item in results:
+        link = (item.get("link") or "").strip()
+        title = (item.get("title") or "").strip() or link
+        if link:
+            lines.append(f"• [{title}]({link})")
+    return "\n".join(lines)
+
+
+def direct_answer_text(answer: str) -> str:
+    lower = answer.lower()
+    start = lower.find("direct answer:")
+    if start == -1:
+        return ""
+    start = start + len("direct answer:")
+    end = lower.find("indirect but relevant insights", start)
+    if end == -1:
+        end = len(answer)
+    return answer[start:end].strip()
+
+
+def should_web_fallback(answer: str) -> bool:
+    direct = direct_answer_text(answer).strip().lower()
+    if not direct:
+        return True
+    if len(direct) < 40:
+        return True
+    weak_markers = [
+        "not found",
+        "not in provided context",
+        "context is weak",
+        "don't know",
+        "do not know",
+        "no specific",
+        "cannot provide",
+    ]
+    return any(marker in direct for marker in weak_markers)
+
+
+def resolve_web_search_default(features: dict, web_cfg: dict) -> str:
+    mode = web_cfg.get("mode", "on")
+    if isinstance(mode, str):
+        mode = mode.lower()
+    feature_val = features.get("web_search")
+    if isinstance(feature_val, str):
+        feature_val = feature_val.lower()
+    if feature_val in ("on", "off", "always"):
+        return feature_val
+    if feature_val is False:
+        return "off"
+    if mode in ("on", "off", "always"):
+        return mode
+    return "on"
 
 
 def build_llm(model_key: str, model_catalog: dict, providers: dict):
@@ -202,10 +327,17 @@ def main():
     config = load_config()
     model_catalog = build_model_catalog(config)
     providers = config.get("providers", {})
+    defaults = config.get("defaults", {})
     model_choices = sorted(model_catalog.keys())
-    default_model = config.get("defaults", {}).get("model", "haiku")
+    default_model = defaults.get("model", "haiku")
     if default_model not in model_catalog and model_choices:
         default_model = model_choices[0]
+    default_verbose = defaults.get("verbose", True)
+    default_verbose_value = "on" if default_verbose else "off"
+    features = config.get("features", {})
+    web_cfg = web_search_config(config)
+    web_search_default = resolve_web_search_default(features, web_cfg)
+    web_search_default_value = web_search_default
 
     parser = argparse.ArgumentParser(
         description="Query Lenny's podcast corpus with model switching",
@@ -227,6 +359,18 @@ def main():
         action="store_true",
         help="List available models and exit",
     )
+    parser.add_argument(
+        "--verbose",
+        choices=["on", "off"],
+        default=default_verbose_value,
+        help="Verbose output (default from CONFIGS.yaml)",
+    )
+    parser.add_argument(
+        "--web-search",
+        choices=["on", "off", "always"],
+        default=web_search_default_value,
+        help="Web search fallback (default from CONFIGS.yaml)",
+    )
 
     args = parser.parse_args()
 
@@ -237,6 +381,21 @@ def main():
     if not args.question:
         parser.print_help()
         return 1
+
+    verbose = args.verbose == "on"
+    web_search_mode = args.web_search
+    web_search_requested = web_search_mode != "off"
+    web_search_force = web_search_mode == "always"
+    web_search_enabled = web_search_requested
+    api_key_env = web_cfg.get("api_key_env", "SERPER_API_KEY")
+    api_key_value = os.environ.get(api_key_env)
+    if web_search_enabled and not api_key_value:
+        print(f"⚠️  Web search disabled: {api_key_env} not found")
+        web_search_enabled = False
+
+    def vprint(*print_args, **print_kwargs):
+        if verbose:
+            print(*print_args, **print_kwargs)
     
     # Check if vector DB exists
     vector_db_path = config.get("paths", {}).get("vector_db", "data/chroma_db")
@@ -249,10 +408,13 @@ def main():
     
     query = " ".join(args.question).strip()
     
-    print()
-    print("🔍 Searching Lenny's podcast corpus...")
-    print(f"❓ Question: {query}")
-    print()
+    vprint()
+    vprint("🔍 Searching Lenny's podcast corpus...")
+    vprint(f"❓ Question: {query}")
+    if web_search_requested:
+        mode_label = "FORCED" if web_search_force else "AUTO"
+        vprint(f"🌐 Web search fallback: {'ON' if web_search_enabled else 'OFF'} ({mode_label})")
+    vprint()
     
     try:
         # Load embeddings (same model used for indexing)
@@ -312,21 +474,45 @@ Answer:"""
         
         prompt = ChatPromptTemplate.from_template(template)
         
-        # Build RAG chain
-        rag_chain = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough()}
-            | prompt
-            | llm
-            | StrOutputParser()
-        )
-        
-        print("🤔 Thinking...")
-        
-        # Get answer
-        answer = rag_chain.invoke(query)
-        
         # Get source documents for attribution
         source_docs = retriever.invoke(query)
+        doc_context = format_docs(source_docs)
+
+        def run_answer(context: str) -> str:
+            chain = prompt | llm | StrOutputParser()
+            return chain.invoke({"context": context, "question": query})
+
+        vprint("🤔 Thinking...")
+
+        answer = run_answer(doc_context)
+        web_results = []
+
+        if web_search_enabled:
+            if web_search_force:
+                vprint("🌐 Running web search (forced)...")
+                web_cfg["api_key_env_value"] = api_key_value
+                if web_cfg.get("provider") == "serper":
+                    web_results = search_serper(query, web_cfg)
+                if web_results:
+                    web_context = format_web_results(web_results)
+                    combined_context = doc_context + "\n\nWeb results:\n" + web_context
+                    answer = run_answer(combined_context)
+                else:
+                    vprint("⚠️  Web search returned no results")
+            else:
+                if should_web_fallback(answer):
+                    vprint("🌐 Running web search fallback...")
+                    web_cfg["api_key_env_value"] = api_key_value
+                    if web_cfg.get("provider") == "serper":
+                        web_results = search_serper(query, web_cfg)
+                    if web_results:
+                        web_context = format_web_results(web_results)
+                        combined_context = doc_context + "\n\nWeb results:\n" + web_context
+                        answer = run_answer(combined_context)
+                    else:
+                        vprint("⚠️  Web search returned no results")
+                else:
+                    vprint("ℹ️  Web search fallback not triggered (direct answer strong)")
         
         print()
         print("💡 Answer:")
@@ -341,10 +527,14 @@ Answer:"""
             print("📚 Sources:")
             print(format_sources(source_docs, max_sources=max_sources))
             print()
+        if web_results:
+            print("🌐 Web Sources:")
+            print(format_web_sources(web_results))
+            print()
         
-        print(f"ℹ️  Using {model_meta['model']} ({model_meta['label']})")
-        print("   Cost: varies by model")
-        print()
+        vprint(f"ℹ️  Using {model_meta['model']} ({model_meta['label']})")
+        vprint("   Cost: varies by model")
+        vprint()
         
         return 0
         

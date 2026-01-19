@@ -9,6 +9,7 @@ import sys
 import yaml
 import logging
 import copy
+import argparse
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
@@ -21,6 +22,9 @@ from langchain_community.vectorstores import Chroma
 logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = {
+    "defaults": {
+        "verbose": True,
+    },
     "paths": {
         "vector_db": "data/chroma_db",
         "logs": "logs",
@@ -94,7 +98,7 @@ def load_transcript_with_metadata(file_path: str) -> tuple[str, Dict[str, Any]]:
     return content, {}
 
 
-def load_all_transcripts(episodes_dir: str = "episodes") -> List[Document]:
+def load_all_transcripts(episodes_dir: str = "episodes", verbose: bool = True) -> List[Document]:
     """
     Load all transcripts from the episodes directory with metadata.
     
@@ -109,11 +113,17 @@ def load_all_transcripts(episodes_dir: str = "episodes") -> List[Document]:
     
     transcript_files = list(episodes_path.glob("*/transcript.md"))
     
-    print(f"Found {len(transcript_files)} transcript files")
-    print()
+    if verbose:
+        print(f"Found {len(transcript_files)} transcript files")
+        print()
     
     # Use tqdm for progress bar
-    for transcript_file in tqdm(transcript_files, desc="📚 Loading transcripts", unit="episode"):
+    for transcript_file in tqdm(
+        transcript_files,
+        desc="📚 Loading transcripts",
+        unit="episode",
+        disable=not verbose,
+    ):
         try:
             content, metadata = load_transcript_with_metadata(str(transcript_file))
             
@@ -133,6 +143,25 @@ def load_all_transcripts(episodes_dir: str = "episodes") -> List[Document]:
 
 def main():
     config = load_config()
+    defaults = config.get("defaults", {})
+    default_verbose = defaults.get("verbose", True)
+
+    parser = argparse.ArgumentParser(
+        description="Index Lenny's podcast transcripts into ChromaDB",
+    )
+    parser.add_argument(
+        "--verbose",
+        choices=["on", "off"],
+        default="on" if default_verbose else "off",
+        help="Verbose output (default from CONFIGS.yaml)",
+    )
+    args = parser.parse_args()
+    verbose = args.verbose == "on"
+
+    def vprint(*print_args, **print_kwargs):
+        if verbose:
+            print(*print_args, **print_kwargs)
+
     paths = config.get("paths", {})
     logs_dir = paths.get("logs", "logs")
     os.makedirs(logs_dir, exist_ok=True)
@@ -141,10 +170,11 @@ def main():
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler(sys.stdout)
-        ]
+        handlers=(
+            [logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)]
+            if verbose
+            else [logging.FileHandler(log_file)]
+        ),
     )
 
     corpora = paths.get("corpora") or []
@@ -155,14 +185,14 @@ def main():
 
     vector_db_path = paths.get("vector_db", "data/chroma_db")
 
-    print("=" * 60)
-    print("LennySan RAG-o-Matic v0.6 - Indexing")
-    print("=" * 60)
-    print()
-    print(f"📋 Logging to: {log_file}")
-    print("☕ Grab a coffee - this takes 5-10 minutes")
-    print("💡 Your screen might dim but we'll keep working...")
-    print()
+    vprint("=" * 60)
+    vprint("LennySan RAG-o-Matic v0.6 - Indexing")
+    vprint("=" * 60)
+    vprint()
+    vprint(f"📋 Logging to: {log_file}")
+    vprint("☕ Grab a coffee - this takes 5-10 minutes")
+    vprint("💡 Your screen might dim but we'll keep working...")
+    vprint()
     
     logger.info("Starting indexing process")
     logger.info(f"Log file: {log_file}")
@@ -174,33 +204,33 @@ def main():
         logger.error("Episodes directory not found")
         return 1
     
-    print("📚 Loading transcript documents with metadata...")
-    print()
+    vprint("📚 Loading transcript documents with metadata...")
+    vprint()
     
     try:
-        documents = load_all_transcripts(episodes_dir)
+        documents = load_all_transcripts(episodes_dir, verbose=verbose)
     except Exception as e:
         print(f"❌ Error loading documents: {e}")
         logger.error(f"Failed to load documents: {e}", exc_info=True)
         return 1
     
-    print()
-    print(f"✅ Loaded {len(documents)} episode transcripts")
+    vprint()
+    vprint(f"✅ Loaded {len(documents)} episode transcripts")
     logger.info(f"Successfully loaded {len(documents)} transcripts")
     
     # Show sample metadata from first document
     if documents:
         sample_meta = documents[0].metadata
-        print()
-        print("📋 Sample metadata from first episode:")
-        print(f"   Guest: {sample_meta.get('guest', 'N/A')}")
-        print(f"   Title: {sample_meta.get('title', 'N/A')}")
-        print(f"   Date: {sample_meta.get('publish_date', 'N/A')}")
-        print(f"   Keywords: {', '.join(sample_meta.get('keywords', [])[:5])}...")
+        vprint()
+        vprint("📋 Sample metadata from first episode:")
+        vprint(f"   Guest: {sample_meta.get('guest', 'N/A')}")
+        vprint(f"   Title: {sample_meta.get('title', 'N/A')}")
+        vprint(f"   Date: {sample_meta.get('publish_date', 'N/A')}")
+        vprint(f"   Keywords: {', '.join(sample_meta.get('keywords', [])[:5])}...")
     
-    print()
-    print("✂️  Splitting into chunks...")
-    print("   (Preserving metadata in each chunk)")
+    vprint()
+    vprint("✂️  Splitting into chunks...")
+    vprint("   (Preserving metadata in each chunk)")
     
     # Split documents into chunks (metadata is preserved in each chunk)
     text_splitter = RecursiveCharacterTextSplitter(
@@ -211,36 +241,36 @@ def main():
     
     # Show progress during splitting
     chunks = []
-    for doc in tqdm(documents, desc="✂️  Chunking", unit="episode"):
+    for doc in tqdm(documents, desc="✂️  Chunking", unit="episode", disable=not verbose):
         doc_chunks = text_splitter.split_documents([doc])
         chunks.extend(doc_chunks)
     
-    print()
-    print(f"✅ Created {len(chunks)} chunks (metadata preserved in each)")
-    print()
+    vprint()
+    vprint(f"✅ Created {len(chunks)} chunks (metadata preserved in each)")
+    vprint()
     
-    print("🧠 Creating embeddings and indexing...")
-    print("=" * 60)
-    print("⏱️  This is the slow part (~5-10 minutes)")
-    print("💤 Your Mac might sleep, but the process continues")
-    print("📊 Processing ~{} chunks...".format(len(chunks)))
-    print()
+    vprint("🧠 Creating embeddings and indexing...")
+    vprint("=" * 60)
+    vprint("⏱️  This is the slow part (~5-10 minutes)")
+    vprint("💤 Your Mac might sleep, but the process continues")
+    vprint("📊 Processing ~{} chunks...".format(len(chunks)))
+    vprint()
     
     # Create embeddings using a free, local model
-    print("🔧 Loading embedding model (sentence-transformers)...")
+    vprint("🔧 Loading embedding model (sentence-transformers)...")
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={'device': 'cpu'},
         encode_kwargs={'batch_size': 32}  # Removed show_progress_bar - causes conflict
     )
-    print("✅ Embedding model loaded")
-    print()
+    vprint("✅ Embedding model loaded")
+    vprint()
     
     # Create vector store with progress
     try:
-        print("💾 Building vector database...")
-        print("   (You'll see a progress bar for embedding generation)")
-        print()
+        vprint("💾 Building vector database...")
+        vprint("   (You'll see a progress bar for embedding generation)")
+        vprint()
         logger.info(f"Creating vector store with {len(chunks)} chunks")
         
         vectorstore = Chroma.from_documents(
@@ -251,26 +281,26 @@ def main():
         
         logger.info("Vector store created successfully")
         
-        print()
-        print("=" * 60)
-        print("✅ Indexing complete!")
-        print("=" * 60)
-        print(f"   📊 Indexed {len(chunks)} chunks from {len(documents)} episodes")
-        print(f"   📋 Metadata preserved: guest, title, date, keywords, etc.")
-        print(f"   💾 Database stored in: {vector_db_path}")
-        print()
-        print("🎉 You're ready to explore!")
-        print()
-        print("Try these queries:")
-        print("   python explore.py 'What does Lenny say about pricing?'")
-        print("   python explore.py 'How do you find product-market fit?'")
-        print("   python explore.py 'What interview questions does Lenny ask?'")
-        print()
-        print("💡 Tip: Metadata enables rich queries like:")
-        print("   - Filter by guest, topic, or date range (future versions)")
-        print("   - See which episode an answer came from")
-        print("   - Track when advice was given (context matters!)")
-        print()
+        vprint()
+        vprint("=" * 60)
+        vprint("✅ Indexing complete!")
+        vprint("=" * 60)
+        vprint(f"   📊 Indexed {len(chunks)} chunks from {len(documents)} episodes")
+        vprint(f"   📋 Metadata preserved: guest, title, date, keywords, etc.")
+        vprint(f"   💾 Database stored in: {vector_db_path}")
+        vprint()
+        vprint("🎉 You're ready to explore!")
+        vprint()
+        vprint("Try these queries:")
+        vprint("   python explore.py 'What does Lenny say about pricing?'")
+        vprint("   python explore.py 'How do you find product-market fit?'")
+        vprint("   python explore.py 'What interview questions does Lenny ask?'")
+        vprint()
+        vprint("💡 Tip: Metadata enables rich queries like:")
+        vprint("   - Filter by guest, topic, or date range (future versions)")
+        vprint("   - See which episode an answer came from")
+        vprint("   - Track when advice was given (context matters!)")
+        vprint()
         
         logger.info("Indexing completed successfully")
         return 0
