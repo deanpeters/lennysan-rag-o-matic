@@ -12,7 +12,7 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                       v0.6
+                                                       v0.75
 ```
                                                        
 A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
@@ -50,7 +50,7 @@ Product managers comfortable with:
 
 If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No shame - different tools for different comfort levels.
 
-## Current Status: v0.6 (CONFIGS.yaml)
+## Current Status: v0.75 (Web Search Fallback)
 
 **What works right now:**
 - CLI query tool
@@ -58,9 +58,12 @@ If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No 
 - Model switching across Anthropic + OpenAI
 - `--list-models` helper to see available choices
 - CONFIGS.yaml for editable defaults (models, paths, retrieval)
+- Web search fallback (AUTO + ALWAYS)
+- `--verbose` controls to reduce console noise
 - Mac only
 
 **Release notes:**
+- `releasenotes/RELEASE_v0.75.md`
 - `releasenotes/RELEASE_v0.62.md`
 - `releasenotes/RELEASE_v0.6.md`
 - `releasenotes/RELEASE_v0.5.md`
@@ -75,6 +78,24 @@ If you're not there yet, use Claude Projects or ChatGPT Custom GPTs instead. No 
 - Not local LLMs (v4.0)
 
 This is a weekend build to prove the RAG concept works. Expect rough edges.
+
+## Contracts and Session Logs (Why This Repo Teaches)
+
+This repo is a pedagogic tool first. We capture intent and learnings so PMs can
+see *how* the system was designed, not just what code exists today.
+
+**Contracts (future-thinking specs):**
+- `contracts/0.0-9.contract/` covers the 0.x era (v0.1-v0.75)
+- `contracts/1.0.contract/` is the forward-looking contract for v1.0 notebooks
+
+Read them *before* changing behavior. If code conflicts with a contract, the contract wins.
+
+**Session logs (historical evidence):**
+- `deannotes/SESSION.0.1.STORY.md` (Weekend at Lenny's v0.1)
+- `deannotes/SESSION.0.5.LOG.md`, `deannotes/SESSION.0.6.LOG.md`, `deannotes/SESSION.0.75.LOG.md`
+- `deannotes/SESSION_LOG_PROMPT.md` (how to capture session logs yourself)
+
+These are not specs. They are teaching artifacts and decision history.
 
 ## How It Works
 
@@ -122,7 +143,7 @@ Use both! The topic files are great for discovering episodes, while the RAG syst
 
 ## Prerequisites
 
-**Required for v0.6:**
+**Required for v0.75:**
 - GitHub account (you're here, so ✓)
 - [Anthropic API key](https://console.anthropic.com/) (for Claude models)
 - [OpenAI API key](https://platform.openai.com/) (for GPT models)
@@ -190,6 +211,13 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
    python explore.py --model gpt-4o-mini "What does Lenny say about pricing?"
    python explore.py "What does Lenny say about pricing?" --model gpt-4o
 
+   # Control verbosity (default: on)
+   python explore.py --verbose off "What does Lenny say about pricing?"
+
+   # Control web search fallback (default: on, auto)
+   python explore.py --web-search off "What does Lenny say about pricing?"
+   python explore.py --web-search always "What does Lenny say about pricing?"
+
    # List available models
    python explore.py --list-models
    
@@ -199,7 +227,7 @@ This project is a fork of the [ChatPRD/lennys-podcast-transcripts](https://githu
 
 That's it. You now have 320 episodes searchable from your command line.
 
-## Configuration (v0.6)
+## Configuration (v0.75)
 
 `CONFIGS.yaml` lets non‑technical PMs safely change defaults without touching code.
 CLI flags always win, so power users can override config when needed.
@@ -207,6 +235,7 @@ CLI flags always win, so power users can override config when needed.
 ```yaml
 defaults:
   model: "haiku"  # haiku | sonnet-4 | gpt-4o-mini | gpt-4o
+  verbose: true
 
 paths:
   vector_db: "data/chroma_db"
@@ -215,11 +244,25 @@ retrieval:
   search_type: "mmr"
   k: 8
   fetch_k: 24
+
+features:
+  web_search: true
+
+web_search:
+  mode: "on"   # on | off | always
+  provider: "serper"
+  endpoint: "https://google.serper.dev/search"
+  api_key_env: "SERPER_API_KEY"
+  max_results: 5
+  timeout_sec: 10
 ```
 
 Edit `CONFIGS.yaml` in the repo root. If the file is missing, the tool uses built‑in defaults.
+If `SERPER_API_KEY` is not set, web search is automatically disabled with a warning.
+Use `--web-search always` to force a search even when the transcript already answers the question.
+AUTO mode is intentionally conservative to avoid unnecessary API calls; deeper heuristics are deferred to a later release.
 
-## Cost Expectations (v0.6)
+## Cost Expectations (v0.75)
 
 **Actual measured costs (Haiku baseline):**
 - **Setup**: $0 (local embeddings, no API calls)
@@ -261,15 +304,23 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - Support Claude Haiku, Claude Sonnet 4, GPT‑4o mini, GPT‑4o
 - One feature: choose your model
 
-**v0.6 - CONFIGS.yaml** ✅ Current
+**v0.6 - CONFIGS.yaml** ✅ Shipped
 - Add a single configuration file for defaults and paths
 - Keep CLI flags as overrides (no breaking changes)
 - One feature: centralize configuration
 
-**v0.75 - Web Search Fallback**
-- Add `--web-fallback` flag
+**v0.75 - Web Search Fallback** ✅ Current
+- Add `--web-search` flag (auto + always)
 - If corpus lacks info, search the web
 - One feature: handle out-of-scope queries
+
+**v0.8 - Docker Search Option**
+- Add optional local SearXNG (Docker) as a web search backend
+- One feature: open‑source search option
+
+**v0.9 - explore.py Diagnostic Logging**
+- Add logs/ output for explore.py runs (system messages + errors)
+- One feature: troubleshooting logs like index_*.log
 
 **v1.0 - Jupyter Support**
 - Jupyter notebooks work
@@ -321,7 +372,7 @@ Each version adds ONE focused capability. We ship fast by staying narrow.
 - Fully offline operation
 - One feature: no API costs
 
-## What Gets Set Up (v0.6)
+## What Gets Set Up (v0.75)
 ```
 lennysan-rag-o-matic/
 ├── CONFIGS.yaml           # Defaults for models, paths, retrieval
@@ -359,6 +410,9 @@ More structure added in later versions.
 - If you see a key error, re-source your shell: `source ~/.zshrc`
 - Start with cheap models for smoke tests: `--model haiku` or `--model gpt-4o-mini`
 - If answers feel too strict, the CLI now uses a 3‑section response to separate direct vs inferred insights.
+
+**Too much output?**
+- Use `--verbose off` on `explore.py` or `index_corpus.py`
 
 **"Command not found: python"**
 - Try `python3` instead

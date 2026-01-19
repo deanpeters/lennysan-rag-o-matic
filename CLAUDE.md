@@ -12,7 +12,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 4. **No vendor lock-in**: Architecture supports multiple LLM providers
 5. **Mac-first, then expand**: v0.1-2.5 Mac only, v3.0 adds Windows
 
-## Current Status: v0.6 (CONFIGS.yaml)
+## Current Status: v0.75 (Web Search Fallback)
 
 **What exists:**
 - ✅ CLI query tool (`explore.py`)
@@ -21,13 +21,32 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - ✅ ChromaDB for vector storage with metadata
 - ✅ Model switching across Anthropic + OpenAI
 - ✅ CONFIGS.yaml for defaults and paths
+- ✅ Web search fallback (AUTO + ALWAYS)
 - ✅ Source attribution (guest, title, date, YouTube links)
 - ✅ Mac-only support
 
-**What's explicitly NOT in v0.6:**
+**What's explicitly NOT in v0.75:**
 - ❌ Jupyter notebooks (that's v1.0)
 - ❌ Topic organization (that's v1.5)
 - ❌ Multiple corpuses (that's v2.5)
+
+## Contracts and Session Logs (Read First)
+
+This repo is a pedagogic tool first. We capture intent and learning so PMs can
+see how decisions were made, not just the final code.
+
+Contracts define the rules:
+- `contracts/0.0-9.contract/README.md` (0.x governance, CLI-first)
+- `contracts/1.0.contract/README.md` (future notebooks governance)
+
+If code conflicts with a contract, the contract wins.
+
+Session logs are historical evidence and teaching artifacts:
+- `deannotes/SESSION.0.1.STORY.md`
+- `deannotes/SESSION.0.5.LOG.md`
+- `deannotes/SESSION.0.6.LOG.md`
+- `deannotes/SESSION.0.75.LOG.md`
+- `deannotes/SESSION_LOG_PROMPT.md`
 
 ## Architecture Decisions (v0.1)
 
@@ -85,7 +104,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 
 **Do NOT remove this in future versions** - metadata preservation is foundational to the project's value proposition.
 
-## v0.6 Implementation Details
+## v0.75 Implementation Details
 
 ### What setup.sh Does
 1. **Preflight checks**: Verifies Mac OS, Git, Python 3.9+, ANTHROPIC_API_KEY
@@ -113,8 +132,10 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 5. **Retrieves chunks**: Gets top `k` relevant chunks with metadata
 6. **Synthesizes answer**: Uses the selected model to generate response (direct + inferred + missing)
 7. **Formats sources**: Deduplicates episodes, shows top sources per config
+8. **Respects flags**: `--verbose` and `--web-search` override CONFIGS.yaml defaults
+9. **Web fallback (v0.75)**: `--web-search on` runs only when direct answers are weak; `--web-search always` forces a web lookup when the API key is present
 
-### File Paths (Accurate as of v0.6)
+### File Paths (Accurate as of v0.75)
 - **Source transcripts**: `/episodes/{guest-name}/transcript.md` (from fork)
 - **Vector database**: `/data/chroma_db/` (generated, gitignored)
 - **Virtual environment**: `/.venv/` (generated, gitignored)
@@ -129,7 +150,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - **PR URL (template)**: `https://github.com/deanpeters/lennys-podcast-transcripts/pull/new/<branch-name>`
 - **Example PR**: `https://github.com/deanpeters/lennys-podcast-transcripts/pull/new/add-lennysan-rag-o-matic`
 
-### Cost Breakdown (v0.6)
+### Cost Breakdown (v0.75)
 - **Embeddings**: $0 (local model, no API calls)
 - **Indexing**: One-time, ~5-10 minutes compute time
 - **Per query**: ~$0.001-0.005 (Claude Haiku API)
@@ -168,16 +189,24 @@ lennysan-rag-o-matic/
 - Support: claude-haiku, claude-sonnet-4, gpt-4o-mini, gpt-4o
 - Single feature: choose your model
 
-**v0.6 - CONFIGS.yaml** ✅ Current
+**v0.6 - CONFIGS.yaml** ✅ Shipped
 - Add a single configuration file for defaults and paths
 - Keep CLI flags as overrides
 - Single feature: centralize configuration
 
-**v0.75 - Web Search Fallback** (New!)
-- Add `--web-fallback` flag
-- If RAG returns "I don't have information...", trigger web search
+**v0.75 - Web Search Fallback** ✅ Current
+- Add `--web-search` flag (auto + always)
+- If direct answer is weak, trigger web search fallback
 - Combine corpus insights with current web info
 - Single feature: handle queries outside corpus scope
+
+**v0.8 - Docker Search Option**
+- Add optional local SearXNG (Docker) search backend
+- Single feature: open‑source search option
+
+**v0.9 - explore.py Diagnostic Logging**
+- Add logs/ output for explore.py runs (system messages + errors)
+- Single feature: troubleshooting logs like index_*.log
 
 **v1.0 - Jupyter Support**
 - Add Jupyter to requirements.txt
@@ -227,6 +256,12 @@ plus Anthropic + OpenAI support and model-specific API key checks.
 
 CONFIGS.yaml is implemented as the default source of truth for models, providers,
 paths, retrieval settings, and output formatting. CLI flags override config values.
+
+### For v0.75 (Web Search Fallback) — Completed
+
+Web search fallback is implemented with `--web-search on|off|always` and a Serper
+provider configuration in CONFIGS.yaml. AUTO mode is conservative; ALWAYS forces
+search for testing without changing heuristics.
 
 ### For v1.0 (Jupyter)
 

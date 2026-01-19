@@ -13,7 +13,8 @@ Thanks for considering contributing! This project follows a disciplined approach
 
 1. **Check the [roadmap](README.md#roadmap)** - Is this already planned?
 2. **Check existing issues** - Has someone already proposed this?
-3. **Start small** - Bug fixes and docs improvements are always welcome
+3. **Read the contracts** - Start with `contracts/0.0-9.contract/README.md`
+4. **Start small** - Bug fixes and docs improvements are always welcome
 
 ## Ways to Contribute
 
@@ -85,16 +86,17 @@ git push origin your-branch-name
 - [ ] Tested on Mac (required for v0.1-2.5)
 - [ ] Updated README if user-facing change
 - [ ] Updated CLAUDE.md if architectural change
+- [ ] Updated contracts if behavior or scope changes
 - [ ] No scope creep (one feature only)
 - [ ] Error messages are helpful
 - [ ] Follows existing code style
 
 ## Version-Specific Guidelines
 
-**For v0.1 (current):**
+**For v0.75 (current):**
 - Bug fixes only
 - Docs improvements only
-- No new features
+- No new features beyond the current scope
 
 **For v0.5+ features:**
 - Open issue first
