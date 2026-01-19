@@ -81,6 +81,14 @@ The CLI must not:
 
 ---
 
+## Docker Search Warning (v0.8)
+
+Docker search is an advanced, optional path. It is "free" but can require
+extra setup, restarts, and troubleshooting. The CLI should warn users that
+this path may be higher effort and encourage API search for simplicity.
+
+---
+
 ## Error and Warning Style
 
 Warnings should be:

@@ -11,7 +11,7 @@ Thanks for considering contributing! This project follows a disciplined approach
 
 ## Before Contributing
 
-1. **Check the [roadmap](README.md#roadmap)** - Is this already planned?
+1. **Check the roadmap** - See `docs/ROADMAP.md`
 2. **Check existing issues** - Has someone already proposed this?
 3. **Read the contracts** - Start with `contracts/0.0-9.contract/README.md`
 4. **Start small** - Bug fixes and docs improvements are always welcome

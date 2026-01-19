@@ -61,6 +61,8 @@ Teaching guidelines:
 - explain before executing
 - prefer clarity over cleverness
 - surface tradeoffs, not just answers
+- use a lively, human voice: educational and entertaining
+- treat documentation as part of the product marketing
 
 ---
 
@@ -203,7 +205,19 @@ Code must not silently redefine behavior.
 
 ---
 
-## Article 15: Supremacy Clause
+## Article 15: Decision Log Discipline
+
+Major decisions must be recorded in `docs/DECISIONS.md`.
+
+If a change affects user trust, cost, or behavior:
+- update the decision log
+- update the contract if needed
+
+Unlogged decisions are considered non-compliant.
+
+---
+
+## Article 16: Supremacy Clause
 
 This Constitution supersedes:
 - tooling defaults

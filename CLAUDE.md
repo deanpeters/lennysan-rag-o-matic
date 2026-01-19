@@ -51,6 +51,9 @@ Session logs are historical evidence and teaching artifacts:
 PM-facing summary:
 - `deannotes/WHATS_NEW.v0.75.md`
 
+Decision log:
+- `docs/DECISIONS.md`
+
 ## Architecture Decisions (v0.1)
 
 ### Why ChromaDB?
@@ -205,7 +208,7 @@ lennysan-rag-o-matic/
 
 **v0.8 - Docker Search Option**
 - Add optional local SearXNG (Docker) search backend
-- Single feature: open‑source search option
+- Single feature: open-source search option (one-button script)
 
 **v0.9 - explore.py Diagnostic Logging**
 - Add logs/ output for explore.py runs (system messages + errors)

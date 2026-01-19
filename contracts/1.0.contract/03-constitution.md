@@ -46,6 +46,10 @@ When these two are in tension:
 A system that produces impressive results but teaches poor habits
 is considered a failure.
 
+Communication is part of the product:
+- educational and entertaining, not dry or academic
+- documentation is a marketing surface, not an afterthought
+
 ---
 
 ## Article 3: Primary User
@@ -288,7 +292,19 @@ Code must not silently redefine behavior.
 
 ---
 
-## Article 18: Permanent Non-Goals
+## Article 18: Decision Log Discipline
+
+Major decisions must be recorded in `docs/DECISIONS.md`.
+
+If a change affects user trust, cost, or behavior:
+- update the decision log
+- update the contract if needed
+
+Unlogged decisions are non-compliant.
+
+---
+
+## Article 19: Permanent Non-Goals
 
 This system is not:
 - a data science platform
@@ -301,7 +317,7 @@ the contract has been violated.
 
 ---
 
-## Article 19: What Success Feels Like
+## Article 20: What Success Feels Like
 
 Success is when:
 - users trust the system
@@ -314,7 +330,7 @@ the system has failed.
 
 ---
 
-## Article 20: Supremacy Clause
+## Article 21: Supremacy Clause
 
 This Constitution supersedes:
 - convenience

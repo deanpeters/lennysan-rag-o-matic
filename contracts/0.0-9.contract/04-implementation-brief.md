@@ -87,6 +87,11 @@ Implementation must:
 AUTO fallback must be conservative.
 ALWAYS is a forced override for testing.
 
+For Docker search:
+- treat it as an advanced path
+- provide clear warnings and simple copy-paste instructions
+- do not auto-start Docker
+
 ---
 
 ## Verbose Controls

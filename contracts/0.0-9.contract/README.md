@@ -159,6 +159,7 @@ These files capture real 0.x sessions and lessons learned:
 - deannotes/SESSION.0.5.LOG.md
 - deannotes/SESSION.0.6.LOG.md
 - deannotes/SESSION.0.75.LOG.md
+- docs/DECISIONS.md
 
 Use them as context, not as governance.
 

@@ -54,6 +54,9 @@ Session logs:
 PM-facing summary:
 - `deannotes/WHATS_NEW.v0.75.md`
 
+Decision log:
+- `docs/DECISIONS.md`
+
 If code conflicts with a contract, the contract wins.
 
 ## Upstream Transcripts Fork + PR Workflow
