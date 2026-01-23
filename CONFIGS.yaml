@@ -1,4 +1,4 @@
-version: "0.8"
+version: "0.85"
 
 # Defaults for CLI when no flags are provided
 defaults:
@@ -54,14 +54,20 @@ paths:
 
 # Retrieval defaults
 retrieval:
+  # k = how many chunks are passed to the LLM (more context = more cost/noise)
   search_type: "mmr"
-  k: 8
-  fetch_k: 24
+  # fetch_k = candidate pool size for MMR (bigger pool = more variety, more cost)
+  k: 10
+  fetch_k: 30
 
 # Output formatting
 output:
-  max_sources: 3
+  max_sources: 5
   response_format: "direct_inferred_missing"
+  deanisms:
+    deanifried_response:
+      mode: "off"  # on | off
+      target_platform: "cli"  # cli | x | linkedin | reddit | substack
   
   
 

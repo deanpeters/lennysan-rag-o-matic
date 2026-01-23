@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LennySan RAG-o-Matic v0.8
+LennySan RAG-o-Matic v0.85
 Simple CLI for querying Lenny's podcast corpus with metadata attribution
 """
 
@@ -15,6 +15,7 @@ import urllib.error
 import urllib.parse
 import shutil
 import subprocess
+import re
 import yaml
 
 # Suppress LangChain deprecation warnings for v0.6
@@ -34,7 +35,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 DEFAULT_CONFIG = {
-    "version": "0.8",
+    "version": "0.85",
     "defaults": {
         "provider": "anthropic",
         "model": "haiku",
@@ -88,6 +89,12 @@ DEFAULT_CONFIG = {
     "output": {
         "max_sources": 3,
         "response_format": "direct_inferred_missing",
+        "deanisms": {
+            "deanifried_response": {
+                "mode": "off",
+                "target_platform": "cli",
+            }
+        },
     },
     "features": {
         "web_search": True,
@@ -392,6 +399,106 @@ def direct_answer_text(answer: str) -> str:
     return answer[start:end].strip()
 
 
+def parse_answer_sections(answer: str) -> dict:
+    headings = {
+        "direct answer": "direct",
+        "indirect but relevant insights (inferred)": "indirect",
+        "what's missing": "missing",
+    }
+    sections = {key: [] for key in headings.values()}
+    current = None
+    for line in answer.splitlines():
+        normalized = re.sub(r"^\s*#+\s*", "", line).strip()
+        normalized = normalized.rstrip(":").strip()
+        lower = normalized.lower()
+        if lower in headings:
+            current = headings[lower]
+            continue
+        if current:
+            sections[current].append(line)
+    return {key: "\n".join(lines).strip() for key, lines in sections.items()}
+
+
+def direct_is_missing(text: str) -> bool:
+    stripped = text.strip().lower()
+    if not stripped:
+        return True
+    weak_starts = (
+        "not found",
+        "not in provided context",
+        "context does not",
+        "do not know",
+        "don't know",
+        "cannot provide",
+        "no specific",
+    )
+    return any(stripped.startswith(marker) for marker in weak_starts)
+
+
+def deanifried_platform_rules(platform: str) -> str:
+    platform = (platform or "cli").lower()
+    rules = {
+        "cli": "Full synthesis. 2-4 short paragraphs. No bullets in prose.",
+        "x": "260-280 characters. 2-3 sentences. One paragraph only. No extra line breaks.",
+        "linkedin": "1000-1300 characters. First 160 characters must stand alone. 2-3 short paragraphs.",
+        "reddit": "500-1000 characters. Two short paragraphs only. Conversational tone.",
+        "substack": "1000-2000 characters. 2-4 paragraphs. No paragraph over 3 sentences.",
+    }
+    return rules.get(platform, rules["cli"])
+
+
+def run_deanifried(llm, direct: str, indirect: str, web: str, platform: str) -> str:
+    platform_rules = deanifried_platform_rules(platform)
+    direct_value = direct.strip() if direct else ""
+    indirect_value = indirect.strip() if indirect else ""
+    web_value = web.strip() if web else ""
+    template = """You are writing a Dean-i-fried response (Dean Peters voice).
+Blend the Direct answer and Indirect insights into one synthesis.
+If the Direct answer is missing or weak, rely on Indirect and Web findings.
+
+Voice rules (Deanisms):
+- Start in motion. No preamble, no runway.
+- Anthropomorphize aggressively. Give systems moods and motives.
+- Coin terms without permission. Invent language shamelessly.
+- Collision creates meaning. Blend 2-3 themes that shouldn't mix.
+- Delight in absurdity. Escalate when it adds punch or clarity.
+- Never explain the joke. Trust the reader.
+
+Output rules:
+- No emojis.
+- Do not use the long em dash character (—).
+- No bullet points in prose. Use sentences and short paragraphs instead.
+- Do not add new facts. Stay grounded in the inputs.
+- Do not include URLs or citations in the prose.
+- Use mild profanity surrogates only (family-friendly). Examples: "shucks", "daggumit", "dang".
+- Include at least one coined term, one anthropomorphized system, and one vivid metaphor.
+- End with a short kicker line (one sentence) that lands the punch.
+
+Platform rules:
+{platform_rules}
+
+Direct answer:
+{direct}
+
+Indirect insights:
+{indirect}
+
+Web findings (if any):
+{web}
+
+Dean-i-fried response:"""
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = prompt | llm | StrOutputParser()
+    return chain.invoke(
+        {
+            "platform_rules": platform_rules,
+            "direct": direct_value or "(none provided)",
+            "indirect": indirect_value or "(none provided)",
+            "web": web_value or "(none provided)",
+        }
+    )
+
+
 def should_web_fallback(answer: str) -> bool:
     direct = direct_answer_text(answer).strip().lower()
     if not direct:
@@ -491,12 +598,19 @@ def main():
     model_catalog = build_model_catalog(config)
     providers = config.get("providers", {})
     defaults = config.get("defaults", {})
+    output_cfg = config.get("output", {}) or {}
+    dean_cfg = (output_cfg.get("deanisms", {}) or {}).get("deanifried_response", {}) or {}
     model_choices = sorted(model_catalog.keys())
     default_model = defaults.get("model", "haiku")
     if default_model not in model_catalog and model_choices:
         default_model = model_choices[0]
     default_verbose = defaults.get("verbose", True)
     default_verbose_value = "on" if default_verbose else "off"
+    dean_default_mode = dean_cfg.get("mode", "off")
+    if isinstance(dean_default_mode, str):
+        dean_default_mode = dean_default_mode.lower()
+    dean_default_mode = "on" if dean_default_mode == "on" else "off"
+    dean_default_platform = dean_cfg.get("target_platform", "cli")
     features = config.get("features", {})
     web_cfg = web_search_config(config)
     web_search_default = resolve_web_search_default(features, web_cfg)
@@ -540,6 +654,18 @@ def main():
         default=None,
         help="Web search provider override (api or docker)",
     )
+    parser.add_argument(
+        "--deanifried",
+        choices=["on", "off"],
+        default=dean_default_mode,
+        help="Dean-i-fried response mode (default from CONFIGS.yaml)",
+    )
+    parser.add_argument(
+        "--deanifried-platform",
+        choices=["cli", "x", "linkedin", "reddit", "substack"],
+        default=dean_default_platform,
+        help="Dean-i-fried platform style (default from CONFIGS.yaml)",
+    )
 
     args = parser.parse_args()
 
@@ -553,6 +679,8 @@ def main():
 
     verbose = args.verbose == "on"
     web_search_mode = args.web_search
+    deanifried_enabled = args.deanifried == "on"
+    deanifried_platform = args.deanifried_platform
     post_run_warnings = []
     web_search_requested = web_search_mode != "off"
     web_search_force = web_search_mode == "always"
@@ -656,6 +784,8 @@ def main():
         mode_label = "FORCED" if web_search_force else "AUTO"
         vprint(f"🌐 Web search fallback: {'ON' if web_search_enabled else 'OFF'} ({mode_label}, {provider_label})")
     vprint()
+    if deanifried_enabled:
+        print(f"🎭 Dean-i-fried: ON (platform: {deanifried_platform}, extra LLM call)")
     
     try:
         # Load embeddings (same model used for indexing)
@@ -686,6 +816,9 @@ def main():
         response_format = config.get("output", {}).get(
             "response_format", "direct_inferred_missing"
         )
+        if deanifried_enabled and response_format != "direct_inferred_missing":
+            post_run_warnings.append("Dean-i-fried disabled: response_format is not direct_inferred_missing")
+            deanifried_enabled = False
         if response_format == "direct_inferred_missing":
             template = """You are a helpful assistant answering questions about Lenny Rachitsky's podcast.
 Use the following context from podcast transcripts to answer the question.
@@ -693,7 +826,16 @@ Respond in three sections with these headings:
 Direct answer:
 Indirect but relevant insights (inferred):
 What's missing:
-In the Direct answer, give a best‑effort summary grounded in the context. If the context is weak, say so, but still summarize any relevant details you can find.
+
+Rules:
+- No bullet points in prose. Use sentences and short paragraphs.
+- Minimums are not targets. If the context supports more, go longer. Do not pad with filler.
+- Prefer substance over brevity. Use additional sentences when they add clarity, nuance, or helpful detail.
+- Direct answer: 2-6 sentences (more if context is rich). Give a best‑effort summary grounded in the context. If the context is weak, say so, but still summarize any relevant details you can find.
+- Direct answer must include at least two concrete details from the context (names, examples, outcomes, quotes, or actions). If the context does not provide two details, explicitly say that and explain what is missing.
+- Indirect insights: 3-6 sentences with at least two distinct insights grounded in the context. If only one distinct insight exists, say that explicitly and explain the constraint.
+- Indirect insights should include at least one concrete detail from the context. If none exist, state the limitation.
+- What's missing: 1-3 sentences describing gaps or absent information.
 
 Context:
 {context}
@@ -751,6 +893,25 @@ Answer:"""
                         vprint("⚠️  Web search returned no results")
                 else:
                     vprint("ℹ️  Web search fallback not triggered (direct answer strong)")
+
+        if deanifried_enabled:
+            sections = parse_answer_sections(answer)
+            direct_text = sections.get("direct", "")
+            indirect_text = sections.get("indirect", "")
+            if not indirect_text:
+                indirect_text = answer.strip()
+            if direct_is_missing(direct_text):
+                direct_text = ""
+            web_context = format_web_results(web_results) if web_results else ""
+            deanifried_text = run_deanifried(
+                llm=llm,
+                direct=direct_text,
+                indirect=indirect_text,
+                web=web_context,
+                platform=deanifried_platform,
+            )
+            if deanifried_text:
+                answer = answer.rstrip() + "\n\nDean-i-fried:\n" + deanifried_text.strip()
         
         print()
         print("💡 Answer:")
