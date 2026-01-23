@@ -42,3 +42,11 @@ These are teaching artifacts and decision history.
 The decision log is the short list of big bets and the reasons behind them. If a change affects behavior, cost, or user trust, it belongs here so future you doesn’t have to play detective.
 
 - [docs/DECISIONS.md](docs/DECISIONS.md)
+
+## Idea parking lot
+
+Not every idea belongs on the roadmap yet. We keep a low‑pressure idea log for anything that’s intriguing but not scheduled.
+
+- [deannotes/IDEAS.md](deannotes/IDEAS.md)
+
+Rule: if an idea gets scheduled for a specific release, tag it with the version in parentheses, like `(slated v0.85)`.

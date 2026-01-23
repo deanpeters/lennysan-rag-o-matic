@@ -21,13 +21,15 @@ You’re in the right place.
 ### Latest
 Start here if you want the newest capability, the newest defaults, and the newest sharp edges.
 
-- [releasenotes/RELEASE_v0.8.md](releasenotes/RELEASE_v0.8.md) - Docker search option (one-button script)
-- [releasenotes/RELEASE_v0.8.GITHUB.md](releasenotes/RELEASE_v0.8.GITHUB.md) - Same release, GitHub-friendly format
+- [releasenotes/RELEASE_v0.85.md](releasenotes/RELEASE_v0.85.md) - Dean-i-fried response mode (optional)
+- [releasenotes/RELEASE_v0.85.GITHUB.md](releasenotes/RELEASE_v0.85.GITHUB.md) - Same release, GitHub-friendly format
 - [deannotes/WHATS_NEW.v0.75.md](deannotes/WHATS_NEW.v0.75.md) - PM-friendly “what changed” story (last full narrative)
 
 ### Archive
 This is the “how we got here” shelf. Use it when you’re tracking a behavior back to the version that introduced it.
 
+- [releasenotes/RELEASE_v0.8.md](releasenotes/RELEASE_v0.8.md) - Docker search option (one-button script)
+- [releasenotes/RELEASE_v0.8.GITHUB.md](releasenotes/RELEASE_v0.8.GITHUB.md) - Same release, GitHub-friendly format
 - [releasenotes/RELEASE_v0.75.md](releasenotes/RELEASE_v0.75.md) - Web search fallback, controlled and optional
 - [releasenotes/RELEASE_v0.75.GITHUB.md](releasenotes/RELEASE_v0.75.GITHUB.md) - Same release, GitHub-friendly format
 - [releasenotes/RELEASE_v0.62.md](releasenotes/RELEASE_v0.62.md) - Stability pass and rough-edge sanding

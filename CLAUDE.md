@@ -206,13 +206,17 @@ lennysan-rag-o-matic/
 - Combine corpus insights with current web info
 - Single feature: handle queries outside corpus scope
 
-**v0.8 - Docker Search Option** ✅ Current
+**v0.8 - Docker Search Option** ✅ Shipped
 - Add optional local SearXNG (Docker) search backend
 - Single feature: open-source search option (one-button script)
 
-**v0.85 - Dean-i-fried Response Mode**
+**v0.85 - Dean-i-fried Response Mode** ✅ Current
 - Add an optional “Dean-i-fried” synthesis that blends Direct + Indirect answers
 - Single feature: a voice-driven combined response mode
+
+**v0.86 - Lenny Therapy Mode**
+- Add an optional facilitator-style mode that reframes evidence into reflective questions
+- Single feature: facilitated reflection using direct + inferred evidence
 
 **v0.9 - explore.py Diagnostic Logging**
 - Add logs/ output for explore.py runs (system messages + errors)
@@ -223,10 +227,18 @@ lennysan-rag-o-matic/
 - Create one example notebook
 - Single feature: interactive exploration
 
+**v1.35 - Brevity vs Verbose Mode**
+- Add a response length mode to trade clarity vs cost
+- Single feature: configurable answer length (short vs detailed)
+
 **v1.5 - Topic Organization**
 - Create topics/ directory structure
 - Add 3-4 example notebooks (pricing, growth, AI, enterprise)
 - Single feature: organized research
+
+**v1.6 - Substack Mode**
+- Add a Substack-ready output mode that blends RAG evidence with Dean’s Substack voice
+- Single feature: data-infused, publishable longform output formatting
 
 **v1.7 - Corpus Sync**
 - Create `sync_corpus.sh` script

@@ -50,6 +50,14 @@ web_search:
   api_key_env: "SERPER_API_KEY"
   max_results: 5
   timeout_sec: 10
+
+output:
+  max_sources: 5
+  response_format: "direct_inferred_missing"
+  deanisms:
+    deanifried_response:
+      mode: "off"  # on | off
+      target_platform: "cli"  # cli | x | linkedin | reddit | substack
 ```
 
 ## Notes
@@ -58,3 +66,4 @@ web_search:
 - Use `--verbose off` to reduce output.
 - Use `--web-search always` for testing.
 - v0.8 defaults web search to AUTO; set `web_search.mode: "off"` if you want pure corpus mode.
+- v0.85 adds Dean-i-fried (extra LLM call); leave it off for lower cost runs.

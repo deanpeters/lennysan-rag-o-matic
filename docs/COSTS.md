@@ -8,8 +8,9 @@ This repo costs money in exactly one way: **LLM calls**. Everything else is loca
 
 The cost knobs are simple:
 - **Model**: bigger brain, bigger bill
-- **Retrieved text**: more chunks = more tokens
+- **Retrieved text**: more chunks = more tokens (see `retrieval.k` and `retrieval.fetch_k`)
 - **Web search**: useful, but can increase spend fast
+- **Dean-i-fried**: adds a second LLM call when enabled
 - **Iteration**: ten “quick tries” adds up
 
 Use this mental model:
@@ -31,3 +32,11 @@ Rule of thumb:
 - Sonnet 4 / GPT-4o for deeper runs
 
 This is cheaper than $20/month subscriptions if you only run occasional queries.
+
+## Recent changes that affect cost
+
+- **Retrieval defaults** now use `k: 10` and `fetch_k: 30` for richer context. That can increase prompt size (and cost) per query.
+- **Dean-i-fried (v0.85)** adds a second LLM call when enabled. That means extra tokens and extra latency.
+  - Platform outputs are best‑effort on length until v1.35 adds hard checks.
+
+If you want cheaper runs, lower `retrieval.k`, keep `fetch_k` modest, and leave Dean-i-fried off until you really need the voice layer.

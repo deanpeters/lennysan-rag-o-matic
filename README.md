@@ -12,7 +12,7 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                       v0.8
+                                                      v0.85
 ~~~
 A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
 
@@ -94,9 +94,9 @@ This is the decision log for big bets only. It exists so future you doesn’t ha
 
 This is the blueprint for “Dean-i-fried,” the optional voice mode coming in v0.85. It defines the rules for blending Direct + Indirect into a punchy synthesis without losing the grounded answer. If you care about tone, memory, and making answers stick, this is the preview. ☞ [docs/DEANISMS.md](docs/DEANISMS.md).
 
-## Current status: v0.8
+## Current status: v0.85
 
-Today it’s CLI-first and Mac-first. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, and includes an optional Docker search backend for those who want local search. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
+Today it’s CLI-first and Mac-first. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, includes an optional Docker search backend, and now offers an optional Dean‑i‑fried voice layer for synthesis. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
 
 ## Credits
 

@@ -82,6 +82,7 @@ These are reserved for later contracts.
 
 - v0.8: optional Docker/SearXNG search backend
 - v0.85: optional Dean-i-fried response mode (direct + inferred blend)
+- v0.86: Lenny Therapy mode (facilitated reflection)
 - v0.9: explore.py diagnostic logs in logs/ (system messages, errors)
 
 These are still within the 0.x contract scope and must follow

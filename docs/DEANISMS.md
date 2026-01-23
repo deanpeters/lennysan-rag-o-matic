@@ -33,6 +33,11 @@ If you turn Dean-i-fried on, you are explicitly choosing to trade cost and time 
 
 ---
 
+### Model behavior note
+
+Dean-i-fried quality varies by model. Some models are bolder, some play it safe.
+If it feels too sanitized, try a different model before you rewrite the rules.
+
 ### Purpose
 
 Transform RAG results (Direct + Indirect answers) into theatrical, rhythmic responses that sound like Dean Peters wrote them. Recitativo where Leporello catalogs Don Giovanni's conquests, legato where melody demands flow, staccato where the joke needs percussion.
@@ -193,9 +198,11 @@ Fails because: Throat-clearing. No hook. Mid-word cutoff. Boring.
 
 #### X/Twitter (280 characters)
 **Target:** 260-280 chars
-**Structure:** 2-3 sentences. Every sentence quotable.
+**Structure:** 2-3 sentences. Single paragraph. Every sentence quotable.
 **Tempo:** Pure staccato or rapid recitativo. No legato—not enough room.
 **Tone:** Punchy absurdism. Maximum punch per syllable.
+
+Note: platform length limits are best‑effort until v1.35 adds hard length checks.
 
 Example:
 "SAFe is discovery theater. Teams commit quarterly without talking to customers, scrambling through backlogs like raccoons. Capital One abandoned it entirely. Even the frameworks know it's over."
@@ -209,14 +216,14 @@ Example:
 
 #### Reddit (500-1000 characters)
 **Target:** 500-1000 chars
-**Structure:** Setup paragraph + escalation paragraph + optional kicker
+**Structure:** Two short paragraphs only. Setup paragraph + escalation paragraph.
 **Critical constraint:** Line breaks between paragraphs. No walls of text.
 **Tempo:** Conversational legato with occasional staccato punch
 **Tone:** Campfire story. Bar conversation. Leporello telling Donna Elvira the truth.
 
 #### Substack (1000-2000 characters)
 **Target:** 1000-2000 chars
-**Structure:** Opening hook + 2-3 body paragraphs + callback/kicker
+**Structure:** Opening hook + 2-4 body paragraphs + callback/kicker
 **Constraint:** No paragraph over 3 sentences. Air between everything.
 **Tempo:** All three available—staccato, legato, recitativo. Build dynamics.
 **Tone:** Extended aria. Essayistic theater. Riffing, not lecturing.

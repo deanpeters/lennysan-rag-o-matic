@@ -58,6 +58,10 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** Add an optional “Dean-i-fried” synthesis that blends direct + inferred answers into the Dean voice.  
   **Why you care:** You get a punchier, more memorable synthesis when you want it, without losing the grounded answer.
 
+- **v0.86: Lenny Therapy mode (facilitated reflection)**  
+  **What:** Add an optional “Lenny Therapy” mode that reframes retrieved insights into facilitator-style questions using MI/CBT-inspired techniques, grounded in transcript evidence (direct + inferred).  
+  **Why you care:** Instead of only getting answers dumped on you, the system can help you think more clearly about stressful PM situations by reflecting, reframing, and asking better questions.
+
 - **v0.9: `explore.py` diagnostic logs**  
   **What:** Save what happened during a run: settings, retrieval, decisions, errors.  
   **Why you care:** Debugging stops being séance work. You can explain behavior, reproduce issues, and learn faster.
@@ -66,9 +70,17 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** The first notebook that shows “query -> evidence -> synthesis” with analysis steps.  
   **Why you care:** This is where the repo turns into a personal research lab, not just a CLI tool.
 
+- **v1.35: Brevity vs verbose mode**  
+  **What:** A response length mode to trade clarity vs cost, with explicit tuning for short or detailed answers.  
+  **Why you care:** You can dial down token spend on quick checks, or dial up detail when you are deep in research.
+
 - **v1.5: Topic organization**  
   **What:** Better structure for themes, tags, and curated paths.  
   **Why you care:** You’ll stop re-discovering the same episodes and start building repeatable learning journeys.
+
+- **v1.6: Substack mode (Dean voice output)**  
+  **What:** A Substack‑ready output mode that blends RAG evidence with Dean‑style narrative learned from his Substack writing.  
+  **Why you care:** It turns raw insight into publishable, data‑infused writing without copy‑paste gymnastics.
 
 - **v1.7: Corpus sync**  
   **What:** Keep transcripts and metadata updated without manual churn.  

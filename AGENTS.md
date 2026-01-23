@@ -12,8 +12,8 @@ Build and evolve a low-barrier PM research tool that lets product managers explo
 - Maintain a “one feature per version” scope discipline.
 
 ## Current Release Target
-- Current: v0.8 (Docker search option)
-- Next planned: v0.85 (Dean-i-fried response mode)
+- Current: v0.85 (Dean-i-fried response mode)
+- Next planned: v0.86 (Lenny Therapy mode)
 
 ## Golden Path Commands (v0.8)
 - Setup + index:
@@ -116,9 +116,12 @@ When changing anything, follow these rules:
 - v0.75: optional web fallback via a `--web-search` flag (auto + always)
 - v0.8: optional Docker/SearXNG search backend
 - v0.85: optional Dean-i-fried response mode (direct + inferred blend)
+- v0.86: Lenny Therapy mode (facilitated reflection)
 - v0.9: explore.py diagnostic logs in logs/ (system messages, errors)
 - v1.0: Jupyter notebook support (one example notebook)
+- v1.35: brevity vs verbose mode (response length + cost tuning)
 - v1.5: topic organization (structured notebooks/topics)
+- v1.6: Substack-ready outputs based on Dean’s Substack voice (data-infused)
 - v1.7: corpus sync (incremental re-index of new episodes)
 - v2.0: Streamlit UI
 - v2.5: second corpus support
