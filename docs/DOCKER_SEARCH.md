@@ -1,9 +1,5 @@
 # Docker Search (One Button, No Drama)
 
-This is the advanced, optional path for open-source search.
-
-# Docker Search (One Button, No Drama)
-
 This is the “I want web search, but I don’t want to hand my queries to a third party” path. You run a local search service in Docker, the repo points to it, and you get a more private and controllable setup. It’s optional, it’s powerful, and yes, it occasionally behaves like Docker.
 
 This doc exists so you can get the benefit without the usual container spelunking. The goal is: start it, verify it, run a query, and know exactly what to do when port 8080 is taken or Docker Desktop decides it’s on a lunch break.
@@ -65,3 +61,10 @@ SEARXNG_PORT=8081 ./scripts/docker_search.sh "why safe sucks"
   ```
 - If you see "Connection refused": wait a few seconds and rerun the script.
 - If Docker feels like too much, use API search instead.
+- Nuclear reset (clean + reliable):
+  ```
+  docker rm -f searxng
+  rm -f logs/searxng.settings.yml
+  ./scripts/docker_search.sh "test query"
+  ```
+  Use when Docker Desktop logs say “settings.yml does not exist” or SearXNG keeps restarting.

@@ -12,7 +12,7 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                       v0.75
+                                                       v0.8
 ~~~
 A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
 
@@ -60,7 +60,7 @@ This is how you change behavior without changing code. `CONFIGS.yaml` is the sin
 
 ### docs/WEB_SEARCH.md
 
-This is optional power with a safety latch. Web search only runs when you explicitly enable it, and this doc explains when it triggers, which provider you’re using, and what tradeoffs you’re accepting when you let “the internet” into your answer loop. It also gives you the escape hatch: if web search gets annoying, turn it off and keep learning. ☞  [docs/WEB_SEARCH.md](docs/WEB_SEARCH.md).
+This is optional power with a safety latch. Web search runs only when enabled in config or via CLI flags (and defaults to AUTO in v0.8), and this doc explains when it triggers, which provider you’re using, and what tradeoffs you’re accepting when you let “the internet” into your answer loop. It also gives you the escape hatch: if web search gets annoying, turn it off and keep learning. ☞  [docs/WEB_SEARCH.md](docs/WEB_SEARCH.md).
 
 ### docs/DOCKER_SEARCH.md
 
@@ -90,9 +90,13 @@ This is where the repo becomes a teaching tool instead of “some scripts.” Co
 
 This is the decision log for big bets only. It exists so future you doesn’t have to play detective, and so contributors don’t accidentally relitigate the same core choices every few weeks. If a change affects trust, cost, or behavior, it belongs here with the “why” written down. ☞ [docs/DECISIONS.md](docs/DECISIONS.md).
 
-## Current status: v0.75
+### docs/DEANISMS.md
 
-Today it’s CLI-first and Mac-first. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, and supports optional web-search fallback modes. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
+This is the blueprint for “Dean-i-fried,” the optional voice mode coming in v0.85. It defines the rules for blending Direct + Indirect into a punchy synthesis without losing the grounded answer. If you care about tone, memory, and making answers stick, this is the preview. ☞ [docs/DEANISMS.md](docs/DEANISMS.md).
+
+## Current status: v0.8
+
+Today it’s CLI-first and Mac-first. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, and includes an optional Docker search backend for those who want local search. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
 
 ## Credits
 

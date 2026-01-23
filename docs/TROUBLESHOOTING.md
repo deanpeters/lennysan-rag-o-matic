@@ -1,7 +1,5 @@
 # Troubleshooting (When Things Get Weird)
 
-# Troubleshooting (When Things Get Weird)
-
 This repo is designed to be low-drama, but your machine did not get that memo. Troubleshooting exists because “it should work” is not a strategy, and because the fastest way to quit a learn-by-building project is to get stuck on the same dumb error for 45 minutes.
 
 This doc is not a novel. It’s a set of quick fixes for common failure modes, written for PMs who want progress, not a surprise masterclass in Python packaging, API keys, or Docker politics.
@@ -46,6 +44,14 @@ The goal is to get you unstuck fast:
   ```
 - If connection refused: wait and rerun
 - If Docker feels heavy: use API search
+- Nuclear reset (clean + reliable):
+  ```
+  docker rm -f searxng
+  rm -f logs/searxng.settings.yml
+  ./scripts/docker_search.sh "test query"
+  ```
+  This forces a fresh settings file and secret key. Use when Docker Desktop logs say
+  “settings.yml does not exist” or SearXNG keeps restarting.
 
 ### "command not found: python"
 - Try `python3`

@@ -54,6 +54,10 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** Run search locally via Docker instead of relying on an external API.  
   **Why you care:** More control, more privacy, and fewer “third party services own my query history” vibes.
 
+- **v0.85: Dean-i-fried response mode (optional)**  
+  **What:** Add an optional “Dean-i-fried” synthesis that blends direct + inferred answers into the Dean voice.  
+  **Why you care:** You get a punchier, more memorable synthesis when you want it, without losing the grounded answer.
+
 - **v0.9: `explore.py` diagnostic logs**  
   **What:** Save what happened during a run: settings, retrieval, decisions, errors.  
   **Why you care:** Debugging stops being séance work. You can explain behavior, reproduce issues, and learn faster.

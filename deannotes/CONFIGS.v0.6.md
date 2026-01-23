@@ -107,6 +107,7 @@ features:
   notebooks: false
 
 web_search:
+  # Requires SERPER_API_KEY for api, or Docker/SearXNG running for docker.
   mode: "on"
   provider: "api"  # api | docker
   endpoint: "https://google.serper.dev/search"

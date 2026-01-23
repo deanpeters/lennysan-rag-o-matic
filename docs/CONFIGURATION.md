@@ -41,6 +41,7 @@ features:
   web_search: true
 
 web_search:
+  # Requires SERPER_API_KEY for api, or Docker/SearXNG running for docker.
   mode: "on"   # on | off | always
   provider: "api"  # api | docker
   endpoint: "https://google.serper.dev/search"
@@ -56,3 +57,4 @@ web_search:
 - API keys live in environment variables, not in this file.
 - Use `--verbose off` to reduce output.
 - Use `--web-search always` for testing.
+- v0.8 defaults web search to AUTO; set `web_search.mode: "off"` if you want pure corpus mode.

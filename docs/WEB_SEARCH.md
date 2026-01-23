@@ -9,9 +9,9 @@ If you want the full CLI command buffet (models, verbosity, flag order, output s
 
 ## Overview
 
-Web search is **off by default**. You enable it when you want it.
+Web search is **on by default (AUTO)** in v0.8. You can turn it off when you want a pure corpus run.
 
-Web search is optional and controlled. It only runs when:
+Web search is optional and controlled. It runs when:
 - you pass `--web-search on|always`, or
 - `CONFIGS.yaml` says it should
 
@@ -63,7 +63,7 @@ python explore.py --web-search always --verbose on "Why does SAFe suck?"
 
 ---
 
-## API search (default)
+## API search (recommended default)
 
 This is the easiest path. Lowest friction. The best “just keep going” option.
 

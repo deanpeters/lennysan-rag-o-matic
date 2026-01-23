@@ -200,15 +200,19 @@ lennysan-rag-o-matic/
 - Keep CLI flags as overrides
 - Single feature: centralize configuration
 
-**v0.75 - Web Search Fallback** ✅ Current
+**v0.75 - Web Search Fallback** ✅ Shipped
 - Add `--web-search` flag (auto + always)
 - If direct answer is weak, trigger web search fallback
 - Combine corpus insights with current web info
 - Single feature: handle queries outside corpus scope
 
-**v0.8 - Docker Search Option**
+**v0.8 - Docker Search Option** ✅ Current
 - Add optional local SearXNG (Docker) search backend
 - Single feature: open-source search option (one-button script)
+
+**v0.85 - Dean-i-fried Response Mode**
+- Add an optional “Dean-i-fried” synthesis that blends Direct + Indirect answers
+- Single feature: a voice-driven combined response mode
 
 **v0.9 - explore.py Diagnostic Logging**
 - Add logs/ output for explore.py runs (system messages + errors)

@@ -81,6 +81,7 @@ These are reserved for later contracts.
 ## Next Up in 0.x (Planned)
 
 - v0.8: optional Docker/SearXNG search backend
+- v0.85: optional Dean-i-fried response mode (direct + inferred blend)
 - v0.9: explore.py diagnostic logs in logs/ (system messages, errors)
 
 These are still within the 0.x contract scope and must follow
