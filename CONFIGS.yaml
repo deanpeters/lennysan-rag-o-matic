@@ -1,4 +1,4 @@
-version: "0.6"
+version: "0.8"
 
 # Defaults for CLI when no flags are provided
 defaults:
@@ -62,18 +62,21 @@ retrieval:
 output:
   max_sources: 3
   response_format: "direct_inferred_missing"
+  
+  
 
 # Feature flags (future‑safe, off by default)
 features:
   web_search: true
   notebooks: false
 
+# Web search fallback (requires SERPER_API_KEY for api, or Docker/SearXNG for docker)
 web_search:
   mode: "on"
-  provider: "docker"  # api | docker
+  provider: "api"  # api | docker
   endpoint: "https://google.serper.dev/search"
   docker_endpoint: "http://localhost:8080/search"
   allow_api_fallback: false
   api_key_env: "SERPER_API_KEY"
-  max_results: 5
+  max_results: 10
   timeout_sec: 10

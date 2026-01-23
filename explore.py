@@ -280,6 +280,35 @@ def search_searxng(query: str, cfg: dict) -> tuple[list[dict], str]:
     return results, ""
 
 
+def searxng_ping(cfg: dict) -> tuple[bool, str]:
+    url = build_searxng_url(cfg.get("docker_endpoint"), "ping")
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/plain,*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "http://localhost:8080/",
+        "X-Forwarded-For": "127.0.0.1",
+        "X-Real-IP": "127.0.0.1",
+    }
+    req = urllib.request.Request(url, headers=headers, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=cfg["timeout_sec"]) as resp:
+            status = resp.getcode() or 200
+    except urllib.error.HTTPError as exc:
+        if exc.code == 403:
+            return False, "HTTP 403 from SearXNG (bot detection)"
+        return False, f"HTTP {exc.code} from SearXNG"
+    except urllib.error.URLError as exc:
+        return False, f"Could not reach SearXNG ({exc.reason})"
+    except Exception as exc:
+        return False, f"Failed to reach SearXNG ({exc})"
+    if status != 200:
+        return False, f"HTTP {status} from SearXNG"
+    return True, ""
+
+
 def docker_available(timeout_sec: int = 5) -> tuple[bool, str]:
     if not shutil.which("docker"):
         return False, "Docker CLI not found"
@@ -547,11 +576,12 @@ def main():
                 api_key_value = os.environ.get(api_key_env)
                 if allow_api_fallback and api_key_value:
                     post_run_warnings.append("Docker not available; falling back to API search (costs apply).")
-                    post_run_warnings.append("To enable Docker search, use the command below:")
+                    post_run_warnings.append("To enable Docker search, run:")
                     post_run_warnings.append("  macOS: open -a Docker")
                     post_run_warnings.append("  Windows: open Docker Desktop")
                     post_run_warnings.append("  docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
                     post_run_warnings.append("  docker start searxng  (if already created)")
+                    post_run_warnings.append("  python explore.py --web-search always --web-provider docker \"your question here\"")
                     provider = "api"
                     provider_label = "API"
                     web_cfg["provider"] = "api"
@@ -561,16 +591,45 @@ def main():
                         post_run_warnings.append(f"Web search disabled: Docker is not available ({reason})")
                     else:
                         post_run_warnings.append("Web search disabled: Docker is not available")
-                    post_run_warnings.append("Start Docker Desktop, then use:")
+                    post_run_warnings.append("Start Docker Desktop, then run:")
                     post_run_warnings.append("  macOS: open -a Docker")
                     post_run_warnings.append("  Windows: open Docker Desktop")
                     post_run_warnings.append("  docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
                     post_run_warnings.append("  docker start searxng  (if already created)")
+                    post_run_warnings.append("  python explore.py --web-search always --web-provider docker \"your question here\"")
                     if allow_api_fallback:
                         if not api_key_value:
                             post_run_warnings.append(f"API fallback disabled: {api_key_env} not found")
                     post_run_warnings.append("Install and start Docker Desktop, or switch provider to api.")
                     web_search_enabled = False
+            else:
+                ping_ok, ping_reason = searxng_ping(web_cfg)
+                if not ping_ok:
+                    allow_api_fallback = web_cfg.get("allow_api_fallback", False)
+                    api_key_value = os.environ.get(api_key_env)
+                    if allow_api_fallback and api_key_value:
+                        post_run_warnings.append("Docker search not reachable; falling back to API search (costs apply).")
+                        post_run_warnings.append(f"Reason: {ping_reason}")
+                        post_run_warnings.append("To enable Docker search, run:")
+                        post_run_warnings.append("  macOS: open -a Docker")
+                        post_run_warnings.append("  Windows: open Docker Desktop")
+                        post_run_warnings.append("  docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
+                        post_run_warnings.append("  python explore.py --web-search always --web-provider docker \"your question here\"")
+                        provider = "api"
+                        provider_label = "API"
+                        web_cfg["provider"] = "api"
+                        web_search_enabled = True
+                    else:
+                        post_run_warnings.append("Web search disabled: Docker search is not reachable")
+                        post_run_warnings.append(f"Reason: {ping_reason}")
+                        post_run_warnings.append("Start Docker Desktop, then run:")
+                        post_run_warnings.append("  macOS: open -a Docker")
+                        post_run_warnings.append("  Windows: open Docker Desktop")
+                        post_run_warnings.append("  docker run -d --name searxng -p 8080:8080 --restart unless-stopped searxng/searxng")
+                        post_run_warnings.append("  python explore.py --web-search always --web-provider docker \"your question here\"")
+                        if allow_api_fallback and not api_key_value:
+                            post_run_warnings.append(f"API fallback disabled: {api_key_env} not found")
+                        web_search_enabled = False
         else:
             post_run_warnings.append(f"Web search disabled: unsupported provider '{provider}'")
             web_search_enabled = False
