@@ -67,8 +67,25 @@ streamlit run app.py
 ~~~
 Opens at `http://localhost:8501`. Pick your model, ask your question, download the answer as Markdown.
 
-## Want to keep in sync with upstream?
-See `GITLENNY.md` for fork + sync instructions.
+## Keeping the corpus fresh (v1.0)
+
+New Lenny episodes don't appear automatically — you fetch them. No upstream dependency, no waiting for a PR to merge:
+
+~~~bash
+source activate.sh
+
+# See what's new without writing anything
+python fetch_corpus.py --dry-run
+
+# Fetch new episodes (safe to run in batches)
+python fetch_corpus.py --limit 6
+python fetch_corpus.py             # gets the rest
+
+# Re-index to pick them up
+python index_corpus.py
+~~~
+
+Sync state is saved automatically between runs, so `--limit 6` always means "6 new ones I haven't fetched yet." See `deannotes/WHATS_NEW.v1.0.md` for the full flag reference.
 
 ## Next steps
 - See `docs/CONFIGURATION.md` to set defaults

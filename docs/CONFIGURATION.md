@@ -68,3 +68,17 @@ output:
 - v0.8 defaults web search to AUTO; set `web_search.mode: "off"` if you want pure corpus mode.
 - v0.85 adds Dean-i-fried (extra LLM call); leave it off for lower cost runs.
 - v0.9 adds the browser UI (`streamlit run app.py`); all CONFIGS.yaml settings apply equally to CLI and browser.
+- v1.0 adds the `pipeline:` section for corpus fetching; `auto_index_after_fetch: true` chains fetch → index in one step.
+
+## Pipeline settings (v1.0)
+
+```yaml
+pipeline:
+  channel_url: "https://www.youtube.com/@LennysPodcast"  # YouTube channel to fetch from
+  episodes_dir: "episodes"           # where transcripts are written
+  sync_state_file: ".sync_state"     # tracks fetched video IDs (gitignored)
+  auto_index_after_fetch: false      # set true to run index_corpus.py automatically after fetch
+  generate_keywords: true            # Haiku generates keyword tags per episode (requires ANTHROPIC_API_KEY)
+  keyword_model: "claude-haiku-4-5-20251001"
+  max_episodes: null                 # null = no limit; set a number to cap total episodes fetched
+```
