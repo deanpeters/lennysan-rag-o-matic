@@ -36,7 +36,6 @@ except ImportError:
 # ── Optional: youtube-transcript-api ─────────────────────────────────────────
 try:
     from youtube_transcript_api import YouTubeTranscriptApi
-    from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
     TRANSCRIPT_API_AVAILABLE = True
 except ImportError:
     TRANSCRIPT_API_AVAILABLE = False
@@ -102,24 +101,26 @@ def check_yt_dlp() -> bool:
         return False
 
 
+MIN_EPISODE_DURATION = 300  # seconds — filter out Shorts and clips (< 5 min)
+
+
 def fetch_channel_videos(channel_url: str, max_episodes: int = None) -> list[dict]:
     """
     Use yt-dlp to list all videos from a channel without downloading audio.
-    Returns a list of dicts with video metadata.
+    Returns a list of dicts with video metadata, excluding Shorts and clips.
+    Uses tab-separated output to avoid conflicts with | in episode titles.
     """
     cmd = [
         "yt-dlp",
         "--flat-playlist",
-        "--print", "%(id)s|%(title)s|%(upload_date)s|%(duration)s|%(view_count)s|%(description)s",
+        "--print", "%(id)s\t%(title)s\t%(upload_date)s\t%(duration)s\t%(view_count)s",
         "--no-warnings",
         "--quiet",
     ]
-    if max_episodes:
-        cmd += ["--playlist-end", str(max_episodes)]
     cmd.append(channel_url)
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
     except subprocess.TimeoutExpired:
         print("❌ yt-dlp timed out fetching the channel. Check your connection.")
         return []
@@ -128,26 +129,30 @@ def fetch_channel_videos(channel_url: str, max_episodes: int = None) -> list[dic
         print(f"❌ yt-dlp error: {result.stderr.strip()}")
         return []
 
-    videos = []
+    all_videos = []
     for line in result.stdout.strip().splitlines():
-        parts = line.split("|", 5)
-        if len(parts) < 5:
+        parts = line.split("\t", 4)
+        if len(parts) < 4:
             continue
-        video_id, title, upload_date, duration_raw, view_count_raw = parts[:5]
-        description = parts[5] if len(parts) > 5 else ""
+        video_id = parts[0].strip()
+        title = parts[1].strip()
+        upload_date = parts[2].strip()
+        duration_raw = parts[3].strip()
+        view_count_raw = parts[4].strip() if len(parts) > 4 else "0"
 
-        # Parse duration (seconds) → human string
+        # Filter out Shorts and clips — full episodes are > MIN_EPISODE_DURATION
         try:
             duration_seconds = float(duration_raw)
-            h = int(duration_seconds // 3600)
-            m = int((duration_seconds % 3600) // 60)
-            s = int(duration_seconds % 60)
-            duration_str = f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
         except (ValueError, TypeError):
-            duration_seconds = 0.0
-            duration_str = "0:00"
+            continue  # NA or missing duration = Short/clip, skip it
+        if duration_seconds < MIN_EPISODE_DURATION:
+            continue
 
-        # Parse upload date YYYYMMDD → YYYY-MM-DD
+        h = int(duration_seconds // 3600)
+        m = int((duration_seconds % 3600) // 60)
+        s = int(duration_seconds % 60)
+        duration_str = f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+
         try:
             publish_date = datetime.strptime(upload_date, "%Y%m%d").strftime("%Y-%m-%d")
         except (ValueError, TypeError):
@@ -158,19 +163,40 @@ def fetch_channel_videos(channel_url: str, max_episodes: int = None) -> list[dic
         except (ValueError, TypeError):
             view_count = 0
 
-        videos.append({
-            "video_id": video_id.strip(),
-            "title": title.strip(),
+        all_videos.append({
+            "video_id": video_id,
+            "title": title,
             "publish_date": publish_date,
             "duration_seconds": duration_seconds,
             "duration": duration_str,
             "view_count": view_count,
-            "description": description.strip(),
-            "youtube_url": f"https://www.youtube.com/watch?v={video_id.strip()}",
+            "description": "",  # fetched separately for new episodes only
+            "youtube_url": f"https://www.youtube.com/watch?v={video_id}",
             "channel": "Lenny's Podcast",
         })
 
-    return videos
+    # Apply limit after filtering Shorts
+    if max_episodes:
+        all_videos = all_videos[:max_episodes]
+
+    return all_videos
+
+
+def fetch_video_description(video_id: str) -> str:
+    """Fetch full description for a single video (only called for new episodes)."""
+    cmd = [
+        "yt-dlp",
+        "--skip-download",
+        "--print", "%(description)s",
+        "--no-warnings",
+        "--quiet",
+        f"https://www.youtube.com/watch?v={video_id}",
+    ]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        return result.stdout.strip() if result.returncode == 0 else ""
+    except Exception:
+        return ""
 
 
 # ── Guest name extraction ─────────────────────────────────────────────────────
@@ -181,31 +207,52 @@ def extract_guest(title: str) -> str:
     Common patterns:
       "Pricing strategies | Jason Lemkin"
       "How Notion grew | Ivan Zhao, CEO of Notion"
+      "Head of Claude Code: What happens after coding | Boris Cherny"
+      "Sequoia CEO Coach on leadership | Brian Halligan"
+      "Jenny Wen (head of design at Claude)"
       "Brian Chesky's big ambitions for Airbnb"
     """
-    # Pattern 1: "topic | Guest Name [, role]"
     if " | " in title:
         after_pipe = title.rsplit(" | ", 1)[-1].strip()
-        # Strip role/company after comma if it looks like a title
-        # "Ivan Zhao, CEO of Notion" → "Ivan Zhao"
-        guest = re.split(r",\s+(?:CEO|CPO|CTO|VP|Head|Co-|founder|author|partner|director)", after_pipe, flags=re.IGNORECASE)[0].strip()
-        return guest
 
-    # Pattern 2: "Name's [topic]" — possessive at the start
+        # Strip parenthetical role: "Jenny Wen (head of design at Claude)" → "Jenny Wen"
+        after_pipe = re.sub(r"\s*\([^)]+\)", "", after_pipe).strip()
+
+        # Strip after comma: "Ivan Zhao, CEO of Notion" → "Ivan Zhao"
+        after_pipe = re.split(r",\s+", after_pipe)[0].strip()
+
+        # Strip leading role/org words before the actual name.
+        # "Sequoia CEO Coach Brian Halligan" → "Brian Halligan"
+        # Strategy: take the last two words, which are almost always "First Last".
+        # Handles prefixes like "Dr." by accepting 3-word results when first word is a title.
+        words = after_pipe.split()
+        if len(words) >= 3 and re.match(r"^(Dr|Mr|Ms|Mrs|Prof)\.?$", words[-3], re.IGNORECASE):
+            return " ".join(words[-3:])
+        if len(words) >= 2:
+            return " ".join(words[-2:])
+        return after_pipe
+
+    # Pattern: "Name's [topic]" — possessive at the start
     possessive = re.match(r"^([A-Z][a-z]+ [A-Z][a-z]+)'s\b", title)
     if possessive:
         return possessive.group(1)
 
-    # Pattern 3: "First Last on [topic]"
+    # Pattern: "First Last on [topic]"
     on_pattern = re.match(r"^([A-Z][a-z]+ [A-Z][a-z]+) on\b", title)
     if on_pattern:
         return on_pattern.group(1)
 
-    # Fallback: no clear guest — use "unknown"
+    # No guest identifiable — solo/Lenny episode
     return "unknown"
 
 
-def guest_to_slug(guest: str) -> str:
+def guest_to_slug(guest: str, title: str = "") -> str:
+    if guest == "unknown" and title:
+        # Use title-based slug so solo episodes don't collide
+        slug = title.lower()
+        slug = re.sub(r"\s*\([^)]+\)", "", slug)   # strip parentheticals
+        slug = re.sub(r"[^a-z0-9]+", "-", slug)
+        return slug.strip("-")[:60] or "unknown"
     slug = guest.lower()
     slug = re.sub(r"[^a-z0-9]+", "-", slug)
     return slug.strip("-") or "unknown"
@@ -221,11 +268,10 @@ def fetch_transcript(video_id: str) -> tuple[str, str]:
     """
     if TRANSCRIPT_API_AVAILABLE:
         try:
-            entries = YouTubeTranscriptApi.get_transcript(video_id)
-            text = " ".join(e["text"] for e in entries)
+            api = YouTubeTranscriptApi()
+            transcript = api.fetch(video_id)
+            text = " ".join(s.text for s in transcript)
             return text, "youtube-captions"
-        except (TranscriptsDisabled, NoTranscriptFound):
-            pass
         except Exception:
             pass
 
@@ -413,7 +459,7 @@ def main():
         title = video["title"]
         video_id = video["video_id"]
         guest = extract_guest(title)
-        slug = guest_to_slug(guest)
+        slug = guest_to_slug(guest, title)
 
         # Make slug unique if collision
         candidate_slug = slug
@@ -425,6 +471,10 @@ def main():
 
         print(f"[{i}/{len(new_videos)}] {title}")
         print(f"    Guest: {guest}  |  Slug: {slug}")
+
+        # Fetch description (skipped in dry-run to save time)
+        if not args.dry_run:
+            video["description"] = fetch_video_description(video["video_id"])
 
         # Fetch transcript
         transcript, method = fetch_transcript(video_id)
