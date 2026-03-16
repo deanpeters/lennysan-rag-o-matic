@@ -1,4 +1,4 @@
-version: "0.85"
+version: "1.0"
 
 # Defaults for CLI when no flags are provided
 defaults:
@@ -70,6 +70,18 @@ output:
       target_platform: "cli"  # cli | x | linkedin | reddit | substack
   
   
+
+# Corpus pipeline (v1.0)
+# fetch_corpus.py pulls transcripts directly from YouTube via yt-dlp
+pipeline:
+  channel_url: "https://www.youtube.com/@LennysPodcast"
+  episodes_dir: "episodes"
+  sync_state_file: ".sync_state"
+  auto_index_after_fetch: false   # set true to run index_corpus.py automatically
+  generate_keywords: true         # uses Haiku to generate keywords (requires ANTHROPIC_API_KEY)
+  keyword_model: "claude-haiku-4-5-20251001"
+  max_episodes: null              # null = all episodes; set a number to limit (useful for testing)
+  whisper_fallback: false         # future: use Whisper if YouTube captions unavailable
 
 # Feature flags (future‑safe, off by default)
 features:

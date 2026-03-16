@@ -12,7 +12,7 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                       v0.9
+                                                       v1.0
 ~~~
 A low-barrier, learn-by-building PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG — from the CLI or your browser, with future support for Jupyter notebooks, time-series exploration, and more.
 
@@ -106,9 +106,9 @@ This is the blueprint for “Dean-i-fried,” the optional voice mode coming in 
 
 This explains where the transcript corpus comes from, how upstream sync works, and why your custom docs are protected. Read this if you ever wonder “am I up to date?” or need to pull in new episodes without nuking your README. ☞ [docs/UPSTREAM.md](docs/UPSTREAM.md).
 
-## Current status: v0.9
+## Current status: v1.0
 
-CLI-first, Mac-first, and now browser-ready. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, includes an optional Docker search backend, an optional Dean‑i‑fried voice layer for synthesis, and a Streamlit browser UI with full CLI parity and one-click Markdown export. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
+CLI-first, Mac-first, browser-ready, and now self-sufficient. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, includes an optional Docker search backend, an optional Dean‑i‑fried voice layer for synthesis, and a Streamlit browser UI with full CLI parity and one-click Markdown export. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
 
 ## Credits
 

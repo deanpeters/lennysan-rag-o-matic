@@ -29,3 +29,7 @@ pyyaml>=6.0
 
 # Browser UI
 streamlit>=1.35.0
+
+# Corpus pipeline (v1.0)
+youtube-transcript-api>=0.6.0
+yt-dlp>=2024.1.1

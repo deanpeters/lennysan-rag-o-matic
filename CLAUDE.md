@@ -12,7 +12,7 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 4. **No vendor lock-in**: Architecture supports multiple LLM providers
 5. **Mac-first, then expand**: v0.1-2.5 Mac only, v3.0 adds Windows
 
-## Current Status: v0.9 (Browser UI)
+## Current Status: v1.0 (Self-Contained Corpus Pipeline)
 
 **What exists:**
 - ✅ CLI query tool (`explore.py`)
@@ -26,10 +26,10 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - ✅ Source attribution (guest, title, date, YouTube links)
 - ✅ Dean-i-fried voice mode
 - ✅ Markdown export (browser UI)
+- ✅ Self-contained corpus pipeline (fetch_corpus.py)
 - ✅ Mac-only support
 
-**What's explicitly NOT in v0.9:**
-- ❌ Self-contained corpus pipeline (that's v1.0)
+**What's explicitly NOT in v1.0:**
 - ❌ Lenny Therapy mode (that's v1.2)
 - ❌ Diagnostic logs (that's v1.4)
 - ❌ Productside corpus + cross-corpus synthesis (that's v2.0)
