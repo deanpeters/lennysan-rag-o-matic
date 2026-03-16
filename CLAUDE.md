@@ -29,9 +29,10 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - ✅ Mac-only support
 
 **What's explicitly NOT in v0.9:**
-- ❌ Jupyter notebooks (that's v1.0)
-- ❌ Topic organization (that's v1.5)
-- ❌ Multiple corpuses (that's v2.5)
+- ❌ Self-contained corpus pipeline (that's v1.0)
+- ❌ Lenny Therapy mode (that's v1.2)
+- ❌ Diagnostic logs (that's v1.4)
+- ❌ Productside corpus + cross-corpus synthesis (that's v2.0)
 
 ## Contracts and Session Logs (Read First)
 
@@ -224,48 +225,29 @@ lennysan-rag-o-matic/
 - One-click Markdown export of every answer
 - Single feature: query from your browser
 
-**v0.86 - Lenny Therapy Mode**
+**v1.0 - Self-Contained Corpus Pipeline**
+- Replace ChatPRD upstream dependency with direct YouTube pipeline
+- YouTube Data API for metadata + youtube-transcript-api for captions
+- Config-driven, incremental, works for any YouTube channel
+- Lenny stays Lenny — same format, same index, we own the feed
+- Single feature: corpus freshness as a property of the tool, not a prayer to an upstream maintainer
+- Design doc: `deannotes/MULTI-CORPUS-VISION.md`
+
+**v1.2 - Lenny Therapy Mode**
 - Add an optional facilitator-style mode that reframes evidence into reflective questions
 - Single feature: facilitated reflection using direct + inferred evidence
+- Design doc: `deannotes/LENNY-THERAPY.md`
 
-**v0.9 - explore.py Diagnostic Logging**
+**v1.4 - Diagnostic Logs**
 - Add logs/ output for explore.py runs (system messages + errors)
 - Single feature: troubleshooting logs like index_*.log
 
-**v1.0 - Jupyter Support**
-- Add Jupyter to requirements.txt
-- Create one example notebook
-- Single feature: interactive exploration
-
-**v1.35 - Brevity vs Verbose Mode**
-- Add a response length mode to trade clarity vs cost
-- Single feature: configurable answer length (short vs detailed)
-
-**v1.5 - Topic Organization**
-- Create topics/ directory structure
-- Add 3-4 example notebooks (pricing, growth, AI, enterprise)
-- Single feature: organized research
-
-**v1.6 - Substack Mode**
-- Add a Substack-ready output mode that blends RAG evidence with Dean’s Substack voice
-- Single feature: data-infused, publishable longform output formatting
-
-**v1.7 - Corpus Sync**
-- Create `sync_corpus.sh` script
-- Check ChatPRD upstream for new episodes since last sync
-- Only re-index new episodes (incremental)
-- Track sync state in `.sync_state` file
-- Single feature: stay current with new episodes
-
-**v2.0 - Streamlit UI**
-- Add streamlit to requirements.txt
-- Create basic web interface
-- Single feature: visual queries
-
-**v2.5 - Second Corpus**
-- Refactor to support multiple corpuses/
-- Add one more source (Productside or community choice)
-- Single feature: compare across sources
+**v2.0 - Productside Corpus + Cross-Corpus Dean-i-fried**
+- Add Productside as a second named corpus (experienced PMs coaching and teaching great product management)
+- Query either corpus alone or both together
+- Cross-corpus Dean-i-fried: each corpus answers independently, synthesis blends both into one punchy take
+- Single feature: comparative knowledge platform with Dean-i-fried collision layer
+- Design doc: `deannotes/MULTI-CORPUS-VISION.md`
 
 **v3.0 - Windows Support**
 - Create setup.bat
@@ -276,6 +258,13 @@ lennysan-rag-o-matic/
 - Integrate LlamaFarm
 - Support Ollama models
 - Single feature: fully offline operation
+
+**On the shelf (valid, lower urgency)**
+- Jupyter support (interactive notebooks)
+- Topic organization (curated paths by theme)
+- Brevity vs verbose mode (configurable answer length)
+- Substack mode (Dean voice output for publishing)
+- Corpus sync script (simple git-based sync, superseded by v1.0 pipeline)
 
 ## Building Future Versions
 

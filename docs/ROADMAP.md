@@ -62,45 +62,39 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** Query from your browser — full parity with the CLI, human-first UX, one-click Markdown export. Pulled forward from v2.0.
   **Why you care:** No terminal required after setup. Pick your model, ask your question, download the answer. Everyone at the table can use it.
 
-- **v0.86: Lenny Therapy mode (facilitated reflection)**
-  **What:** Add an optional “Lenny Therapy” mode that reframes retrieved insights into facilitator-style questions using MI/CBT-inspired techniques, grounded in transcript evidence (direct + inferred).
-  **Why you care:** Instead of only getting answers dumped on you, the system can help you think more clearly about stressful PM situations by reflecting, reframing, and asking better questions.
+- **v1.0: Self-contained corpus pipeline (own the transcripts)**
+  **What:** Replace the ChatPRD upstream dependency with a direct YouTube pipeline. YouTube Data API for metadata + auto-captions for transcripts. Config-driven, incremental, works for any YouTube channel. Lenny stays Lenny — same format, same index, we just own the feed.
+  **Why you care:** Keeping the corpus current in an era of disruptive innovation is paramount. You can’t build a reliable research tool on a corpus that might be weeks or months stale. This makes freshness a property of the tool, not a prayer to an upstream maintainer.
 
-- **v1.0: `explore.py` diagnostic logs**
-  **What:** Save what happened during a run: settings, retrieval, decisions, errors.
+- **v1.2: Lenny Therapy mode (facilitated reflection)**
+  **What:** An optional mode that reframes corpus evidence into facilitator-style questions grounded in transcript evidence — direct + inferred. Reflects, reframes, never prescribes. Design doc: `deannotes/LENNY-THERAPY.md`.
+  **Why you care:** Sometimes you don’t need another answer. You need a better question. This mode slows the moment down and surfaces collective wisdom through a facilitator’s lens instead of an answer engine’s.
+
+- **v1.4: Diagnostic logs**
+  **What:** Save what happened during a run — settings, retrieval decisions, errors — to a `logs/` directory.
   **Why you care:** Debugging stops being séance work. You can explain behavior, reproduce issues, and learn faster.
 
-- **v1.0: Jupyter support (one example notebook)**  
-  **What:** The first notebook that shows “query -> evidence -> synthesis” with analysis steps.  
-  **Why you care:** This is where the repo turns into a personal research lab, not just a CLI tool.
+- **v2.0: Productside corpus + cross-corpus Dean-i-fried**
+  **What:** Add Productside as a second named corpus (experienced PMs coaching and teaching great product management). Query either corpus alone or both together. When querying both: each answers independently, then Dean-i-fried synthesizes the collision into one punchy take. Design doc: `deannotes/MULTI-CORPUS-VISION.md`.
+  **Why you care:** Practitioners telling stories vs. experienced PMs coaching craft — that’s not the same angle twice. Dean-i-fried finds the collision between them and turns it into something no single-corpus tool can produce.
 
-- **v1.35: Brevity vs verbose mode**  
-  **What:** A response length mode to trade clarity vs cost, with explicit tuning for short or detailed answers.  
-  **Why you care:** You can dial down token spend on quick checks, or dial up detail when you are deep in research.
-
-- **v1.5: Topic organization**  
-  **What:** Better structure for themes, tags, and curated paths.  
-  **Why you care:** You’ll stop re-discovering the same episodes and start building repeatable learning journeys.
-
-- **v1.6: Substack mode (Dean voice output)**  
-  **What:** A Substack‑ready output mode that blends RAG evidence with Dean‑style narrative learned from his Substack writing.  
-  **Why you care:** It turns raw insight into publishable, data‑infused writing without copy‑paste gymnastics.
-
-- **v1.7: Corpus sync**  
-  **What:** Keep transcripts and metadata updated without manual churn.  
-  **Why you care:** Your tool doesn’t rot. New episodes show up without you doing weekend chores.
-
-- **v2.0: Streamlit UI** *(pulled forward as v0.9)*
+- **v2.5: Streamlit UI** *(pulled forward as v0.9)*
   **What:** Shipped early. See v0.9 above.
 
-- **v2.5: Second corpus**  
-  **What:** Add another transcript set (or your own) alongside Lenny’s.  
-  **Why you care:** You can compare perspectives across sources and build your own research stack.
-
-- **v3.0: Windows support**  
-  **What:** Works for teams that don’t live on Macs.  
+- **v3.0: Windows support**
+  **What:** Works for teams that don’t live on Macs.
   **Why you care:** This stops being “Dean’s fun toy” and becomes team-adoptable.
 
-- **v4.0: Local LLMs**  
-  **What:** Run models locally, reduce reliance on APIs.  
+- **v4.0: Local LLMs**
+  **What:** Run models locally, reduce reliance on APIs.
   **Why you care:** Privacy, cost control, and offline experimentation when you need it.
+
+---
+
+### On the shelf (valid, lower urgency)
+
+- **Jupyter support** — interactive exploration via notebooks
+- **Topic organization** — curated paths by theme
+- **Brevity vs verbose mode** — configurable answer length
+- **Substack mode** — Dean voice output formatted for publishing
+- **Corpus sync script** — simple git-based sync (superseded by v1.0 pipeline for most users)
