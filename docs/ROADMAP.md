@@ -54,16 +54,20 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** Run search locally via Docker instead of relying on an external API.  
   **Why you care:** More control, more privacy, and fewer “third party services own my query history” vibes.
 
-- **v0.85: Dean-i-fried response mode (optional)**  
-  **What:** Add an optional “Dean-i-fried” synthesis that blends direct + inferred answers into the Dean voice.  
+- ✅ **v0.85: Dean-i-fried response mode (optional)**
+  **What:** Add an optional “Dean-i-fried” synthesis that blends direct + inferred answers into the Dean voice.
   **Why you care:** You get a punchier, more memorable synthesis when you want it, without losing the grounded answer.
 
-- **v0.86: Lenny Therapy mode (facilitated reflection)**  
-  **What:** Add an optional “Lenny Therapy” mode that reframes retrieved insights into facilitator-style questions using MI/CBT-inspired techniques, grounded in transcript evidence (direct + inferred).  
+- ✅ **v0.9: Browser UI (Streamlit)**
+  **What:** Query from your browser — full parity with the CLI, human-first UX, one-click Markdown export. Pulled forward from v2.0.
+  **Why you care:** No terminal required after setup. Pick your model, ask your question, download the answer. Everyone at the table can use it.
+
+- **v0.86: Lenny Therapy mode (facilitated reflection)**
+  **What:** Add an optional “Lenny Therapy” mode that reframes retrieved insights into facilitator-style questions using MI/CBT-inspired techniques, grounded in transcript evidence (direct + inferred).
   **Why you care:** Instead of only getting answers dumped on you, the system can help you think more clearly about stressful PM situations by reflecting, reframing, and asking better questions.
 
-- **v0.9: `explore.py` diagnostic logs**  
-  **What:** Save what happened during a run: settings, retrieval, decisions, errors.  
+- **v1.0: `explore.py` diagnostic logs**
+  **What:** Save what happened during a run: settings, retrieval, decisions, errors.
   **Why you care:** Debugging stops being séance work. You can explain behavior, reproduce issues, and learn faster.
 
 - **v1.0: Jupyter support (one example notebook)**  
@@ -86,9 +90,8 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** Keep transcripts and metadata updated without manual churn.  
   **Why you care:** Your tool doesn’t rot. New episodes show up without you doing weekend chores.
 
-- **v2.0: Streamlit UI**  
-  **What:** A simple UI for browsing, querying, and inspecting sources.  
-  **Why you care:** Easier demos, easier teaching, easier “look, here’s the receipts” sharing.
+- **v2.0: Streamlit UI** *(pulled forward as v0.9)*
+  **What:** Shipped early. See v0.9 above.
 
 - **v2.5: Second corpus**  
   **What:** Add another transcript set (or your own) alongside Lenny’s.  

@@ -38,5 +38,6 @@ This is cheaper than $20/month subscriptions if you only run occasional queries.
 - **Retrieval defaults** now use `k: 10` and `fetch_k: 30` for richer context. That can increase prompt size (and cost) per query.
 - **Dean-i-fried (v0.85)** adds a second LLM call when enabled. That means extra tokens and extra latency.
   - Platform outputs are best‑effort on length until v1.35 adds hard checks.
+- **Browser UI (v0.9)** adds no API cost. Streamlit runs locally and the same LLM calls happen whether you're in the CLI or the browser. The only difference is where you type your question.
 
 If you want cheaper runs, lower `retrieval.k`, keep `fetch_k` modest, and leave Dean-i-fried off until you really need the voice layer.

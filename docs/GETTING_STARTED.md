@@ -23,7 +23,7 @@ One important copy/paste note: this repo uses `~~~` fences for command examples 
 
 ---
 
-## Prereqs (v0.75)
+## Prereqs (v0.9)
 - Git
 - Python 3.9+
 - Anthropic API key (for Claude)
@@ -46,17 +46,26 @@ export ANTHROPIC_API_KEY='sk-ant-...'
 export OPENAI_API_KEY='sk-...'  # optional
 ~~~
 
-3) Run setup
+3) Run setup (one time)
 ~~~bash
 chmod +x setup.sh activate.sh
 ./setup.sh
 ~~~
 
-4) Ask a question
+4) Choose your interface
+
+**CLI** — ask a question, get a grounded answer with sources:
 ~~~bash
 source activate.sh
 python explore.py "What does Lenny say about pricing?"
 ~~~
+
+**Browser** — same corpus, same models, no terminal required after setup:
+~~~bash
+source activate.sh
+streamlit run app.py
+~~~
+Opens at `http://localhost:8501`. Pick your model, ask your question, download the answer as Markdown.
 
 ## Want to keep in sync with upstream?
 See `GITLENNY.md` for fork + sync instructions.

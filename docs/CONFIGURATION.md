@@ -67,3 +67,4 @@ output:
 - Use `--web-search always` for testing.
 - v0.8 defaults web search to AUTO; set `web_search.mode: "off"` if you want pure corpus mode.
 - v0.85 adds Dean-i-fried (extra LLM call); leave it off for lower cost runs.
+- v0.9 adds the browser UI (`streamlit run app.py`); all CONFIGS.yaml settings apply equally to CLI and browser.
