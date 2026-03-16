@@ -84,6 +84,14 @@ git remote -v
 
 ```
 
+### Safety rail: make upstream fetch-only (recommended)
+
+This prevents accidental pushes to the upstream transcripts repo:
+
+```bash
+git remote set-url --push upstream DISABLE
+```
+
 ### Step 7: Sync with the original
 
 Pull down the latest transcripts from the original repository to ensure you are up to date.
@@ -217,6 +225,11 @@ When you sync with this protective strategy:
 **"Already up to date"**
 - You already have all upstream changes
 - Nothing to sync right now
+
+**"This repository moved" warning when pushing**
+- Stop. That means GitHub is redirecting your push to a different repo.
+- Run `git remote -v` and confirm the push URL is what you expect.
+- Never force-push if the URL is redirecting.
 
 **"No new episodes, only documentation updates"**
 - Upstream sometimes updates just their README (community project listings, etc.)

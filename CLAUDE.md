@@ -12,10 +12,11 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 4. **No vendor lock-in**: Architecture supports multiple LLM providers
 5. **Mac-first, then expand**: v0.1-2.5 Mac only, v3.0 adds Windows
 
-## Current Status: v0.75 (Web Search Fallback)
+## Current Status: v0.9 (Browser UI)
 
 **What exists:**
 - ✅ CLI query tool (`explore.py`)
+- ✅ Browser UI (`app.py`) with full CLI parity
 - ✅ Indexing script (`index_corpus.py`) with YAML metadata preservation
 - ✅ Setup automation (`setup.sh`)
 - ✅ ChromaDB for vector storage with metadata
@@ -23,9 +24,11 @@ LennySan RAG-o-Matic is a low-barrier PM research tool that lets product manager
 - ✅ CONFIGS.yaml for defaults and paths
 - ✅ Web search fallback (AUTO + ALWAYS)
 - ✅ Source attribution (guest, title, date, YouTube links)
+- ✅ Dean-i-fried voice mode
+- ✅ Markdown export (browser UI)
 - ✅ Mac-only support
 
-**What's explicitly NOT in v0.75:**
+**What's explicitly NOT in v0.9:**
 - ❌ Jupyter notebooks (that's v1.0)
 - ❌ Topic organization (that's v1.5)
 - ❌ Multiple corpuses (that's v2.5)
@@ -141,12 +144,12 @@ Decision log:
 8. **Respects flags**: `--verbose` and `--web-search` override CONFIGS.yaml defaults
 9. **Web fallback (v0.75)**: `--web-search on` runs only when direct answers are weak; `--web-search always` forces a web lookup when the API key is present
 
-### File Paths (Accurate as of v0.75)
+### File Paths (Accurate as of v0.9)
 - **Source transcripts**: `/episodes/{guest-name}/transcript.md` (from fork)
 - **Vector database**: `/data/chroma_db/` (generated, gitignored)
 - **Virtual environment**: `/.venv/` (generated, gitignored)
-- **Python files**: `/index_corpus.py`, `/explore.py`, `/setup.sh` (in repo)
-- **Config**: `/requirements.txt`, `/.gitignore` (in repo)
+- **Python files**: `/index_corpus.py`, `/explore.py`, `/app.py`, `/setup.sh` (in repo)
+- **Config**: `/requirements.txt`, `/CONFIGS.yaml`, `/.gitignore` (in repo)
 - **Docs**: `/README.md`, `/CLAUDE.md`, `/GITLENNY.md` (in repo)
 
 ### Upstream Transcripts Fork + PR Workflow
@@ -210,9 +213,16 @@ lennysan-rag-o-matic/
 - Add optional local SearXNG (Docker) search backend
 - Single feature: open-source search option (one-button script)
 
-**v0.85 - Dean-i-fried Response Mode** ✅ Current
+**v0.85 - Dean-i-fried Response Mode** ✅ Shipped
 - Add an optional “Dean-i-fried” synthesis that blends Direct + Indirect answers
 - Single feature: a voice-driven combined response mode
+
+**v0.9 - Browser UI** ✅ Current
+- Add Streamlit browser UI (`app.py`) with full CLI parity
+- Human-first UX: friendly labels, plain-English help, “What do these mean?” explainer
+- Response style toggle (Full analysis vs. Direct answer only)
+- One-click Markdown export of every answer
+- Single feature: query from your browser
 
 **v0.86 - Lenny Therapy Mode**
 - Add an optional facilitator-style mode that reframes evidence into reflective questions

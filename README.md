@@ -12,9 +12,9 @@
 | |_) |  / _ \ | |  _  _ \ _____  | |\/| |/ _` | __| |/ __|
 |  _ <  / ___ \| |_| |_| |_____|  | |  | | (_| | |_| | (__
 |_| \_\/_/   \_\____\___/         |_|  |_|\__,_|\__|_|\___|
-                                                      v0.85
+                                                       v0.9
 ~~~
-A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
+A low-barrier, learn-by-building PM research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG — from the CLI or your browser, with future support for Jupyter notebooks, time-series exploration, and more.
 
 ## What This Does
 
@@ -22,13 +22,21 @@ You know that moment when you *swear* Lenny said something perfect about pricing
 
 ## What you can do in 5 minutes
 
-This is the proof-of-life path. Setup once, activate the environment, ask a question like a human, get a grounded answer with sources, and immediately feel your brain rehydrate.
+This is the proof-of-life path. Setup once, activate the environment, then choose your interface.
 
+**CLI** — ask a question, get a grounded answer with sources:
 ~~~bash
 ./setup.sh
 source activate.sh
 python explore.py "What does Lenny say about pricing?"
 ~~~
+
+**Browser** — same corpus, same models, no terminal required after setup:
+~~~bash
+source activate.sh
+streamlit run app.py
+~~~
+Opens at `http://localhost:8501`. Pick your model, ask your question, download the answer as Markdown.
 
 
 
@@ -94,9 +102,13 @@ This is the decision log for big bets only. It exists so future you doesn’t ha
 
 This is the blueprint for “Dean-i-fried,” the optional voice mode coming in v0.85. It defines the rules for blending Direct + Indirect into a punchy synthesis without losing the grounded answer. If you care about tone, memory, and making answers stick, this is the preview. ☞ [docs/DEANISMS.md](docs/DEANISMS.md).
 
-## Current status: v0.85
+### docs/UPSTREAM.md
 
-Today it’s CLI-first and Mac-first. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, includes an optional Docker search backend, and now offers an optional Dean‑i‑fried voice layer for synthesis. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
+This explains where the transcript corpus comes from, how upstream sync works, and why your custom docs are protected. Read this if you ever wonder “am I up to date?” or need to pull in new episodes without nuking your README. ☞ [docs/UPSTREAM.md](docs/UPSTREAM.md).
+
+## Current status: v0.9
+
+CLI-first, Mac-first, and now browser-ready. It supports model switching across Anthropic and OpenAI, uses `CONFIGS.yaml` for defaults, supports web-search fallback modes, includes an optional Docker search backend, an optional Dean‑i‑fried voice layer for synthesis, and a Streamlit browser UI with full CLI parity and one-click Markdown export. It’s intentionally a weekend-grade product: useful, teachable, and still a little rough around the edges.
 
 ## Credits
 

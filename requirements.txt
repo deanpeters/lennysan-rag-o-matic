@@ -26,3 +26,6 @@ tqdm>=4.66.0
 
 # Utilities
 pyyaml>=6.0
+
+# Browser UI
+streamlit>=1.35.0
