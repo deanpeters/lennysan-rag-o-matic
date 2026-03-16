@@ -104,11 +104,12 @@ def check_yt_dlp() -> bool:
 MIN_EPISODE_DURATION = 300  # seconds — filter out Shorts and clips (< 5 min)
 
 
-def fetch_channel_videos(channel_url: str, max_episodes: int = None) -> list[dict]:
+def fetch_channel_videos(channel_url: str) -> list[dict]:
     """
     Use yt-dlp to list all videos from a channel without downloading audio.
     Returns a list of dicts with video metadata, excluding Shorts and clips.
     Uses tab-separated output to avoid conflicts with | in episode titles.
+    Note: --limit is applied later (after sync state filtering) so batching works correctly.
     """
     cmd = [
         "yt-dlp",
@@ -174,10 +175,6 @@ def fetch_channel_videos(channel_url: str, max_episodes: int = None) -> list[dic
             "youtube_url": f"https://www.youtube.com/watch?v={video_id}",
             "channel": "Lenny's Podcast",
         })
-
-    # Apply limit after filtering Shorts
-    if max_episodes:
-        all_videos = all_videos[:max_episodes]
 
     return all_videos
 
@@ -431,18 +428,23 @@ def main():
         print(f"   (limited to {max_episodes} most recent)")
     print()
 
-    videos = fetch_channel_videos(channel_url, max_episodes)
+    videos = fetch_channel_videos(channel_url)
     if not videos:
         print("❌ No videos found. Check the channel URL in CONFIGS.yaml.")
         return 1
 
-    print(f"📋 Found {len(videos)} videos on channel")
+    print(f"📋 Found {len(videos)} full episodes on channel (Shorts excluded)")
 
-    # Filter to new ones
+    # Filter to new ones, then apply --limit so batching works correctly:
+    # --limit 6 means "fetch 6 NEW episodes", not "look at 6 most recent"
     new_videos = [v for v in videos if v["video_id"] not in known_ids]
     if not args.full:
         print(f"✅ {len(videos) - len(new_videos)} already fetched")
-        print(f"🆕 {len(new_videos)} new episode(s) to fetch")
+        print(f"🆕 {len(new_videos)} new episode(s) available")
+    if max_episodes and len(new_videos) > max_episodes:
+        print(f"   Fetching {max_episodes} this run (--limit {max_episodes})")
+        new_videos = new_videos[:max_episodes]
+    print(f"🆕 {len(new_videos)} episode(s) to fetch this run")
     print()
 
     if not new_videos:
