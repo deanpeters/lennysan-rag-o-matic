@@ -147,7 +147,7 @@ Here are some projects that have been built using this transcript archive:
 
 **[Lenny Ideation Constellation & Search](https://lennys-search.vercel.app/)** - A semantic search engine and idea explorer for Lenny's Podcast. Find exactly what the guests said, or visually discover how their ideas connect, cluster, and contradict across episodes.
 
-**[LennySan RAG-o-Matic](https://github.com/deanpeters/lennysan-rag-o-matic)** by Dean Peters - A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
+**[LennySan RAG-o-Matic](https://github.com/deanpeters/lennysan-rag-o-matic)** by Dean Peters - A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI or your browser via Streamlit. Both include a direct answer mode and an optional web search for related-items and a 'dean-i-fried' analysis, with future support for Jupyter notebooks, time-series exploration, and more.
 
 **[Ask Lenny](https://ask-lenny.vercel.app/)** by Prayerson Christian - AI research assistant that answers questions using real quotes from Lenny's podcast.
 
