@@ -1,38 +1,40 @@
 ---
 guest: Jason Fried
-title: How to get press for your product | Jason Feifer (editor in chief of Entrepreneur
-  magazine)
-youtube_url: https://www.youtube.com/watch?v=LZLdoAq3R7Y
-video_id: LZLdoAq3R7Y
-publish_date: 2023-10-12
-description: 'Jason Feifer is the editor in chief of Entrepreneur magazine and a former
-  editor at Fast Company. He’s also a podcast host, book author, keynote speaker,
-  and startup advisor. Every week,...
+title: Jason Fried challenges your thinking on fundraising, goals, growth, and more
+youtube_url: https://www.youtube.com/watch?v=dAnF0tk0di8
+video_id: dAnF0tk0di8
+publish_date: 2023-12-17
+description: 'Jason Fried is the co-founder and CEO of 37signals, the maker of Basecamp
+  and HEY. With fewer than 80 employees, they have over 100,000 customers, generate
+  tens of millions of dollars in profit each year, and have no investors, board, or
+  any plans to ever raise money or sell the company. In this conversation, we explore
+  bootstrapping as a path for tech founders, discussing why he and his team prioritize
+  profit above all else, the unexpected challenges with raising venture capital, the
+  Shape Up framework for building products, why and how to foster a gut-driven culture,
+  Jasons thoughts on why work should not feel like war, advice for starting a bootstrapped
+  business, and the philosophy behind Once, 37signalss new line of software products.
 
   '
-duration_seconds: 6148.0
-duration: '1:42:28'
-view_count: 3834
+duration_seconds: 6600.0
+duration: '1:50:00'
+view_count: 62989
 channel: Lenny's Podcast
 keywords:
-- growth
-- acquisition
-- metrics
-- okrs
-- kpis
-- roadmap
-- data-driven
-- pricing
-- subscription
-- revenue
-- hiring
-- management
-- strategy
-- vision
-- mission
+- bootstrapping
+- venture-capital
+- independence
+- profitability
+- constraints
+- focus
+- simplicity
+- gut-instinct
+- planning
+- team-structure
+- calm-company
+- shape-up
 ---
 
-# How to get press for your product | Jason Feifer (editor in chief of Entrepreneur magazine)
+# Jason Fried challenges your thinking on fundraising, goals, growth, and more
 
 ## Transcript
 

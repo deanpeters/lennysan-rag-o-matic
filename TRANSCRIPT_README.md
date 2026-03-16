@@ -129,11 +129,39 @@ Here are some projects that have been built using this transcript archive:
 
 **[Lenny's Frameworks](https://lennys-frameworks.vercel.app/)** - A collection of frameworks and mental models extracted from Lenny's Podcast episodes.
 
-**[Lenny Listens](https://lenny-listens.vercel.app/)** - Uses Lenny’s interviewing methodology to generate AI-led interviews you can run with real customers.
+**[Lenny Listens](https://lenny-listens.vercel.app/)** - Uses Lenny's interviewing methodology to generate AI-led interviews you can run with real customers.
 
 **[Lenny's Advice Arena](https://lennysadvicearena.lovable.app/)** - An interactive experience for exploring product advice from Lenny's Podcast.
 
 **[Lenny Gallery](https://lennygallery.manus.space/)** by Alan Chan - An infographic gallery with visual summaries of key episodes, built with Manus AI.
+
+**[Lenny's Friends in Notion](https://lnkd.in/gtEdP5ew)** by Saya Iwasaki - turned Lenny's guests into Notion mentors, so now you can ask anything you want & get feedback from them right in your Notion workspace. Each guest has a persona set up with mental models, frameworks & communication styles; you can also query by companies.
+
+**[Lenny Distilled](https://lennydistilled.com)** by [Harsh Nene](https://www.linkedin.com/in/harshnene/) - A curated collection of PM wisdom to dip into anytime...discover a new insight each visit, trace it back to the source quote and YouTube moment. Mapped to the PM craft across 6 dimensions, minimalist design, multiple languages.
+
+**[Lenny's Library in Radia.io](https://getradia.io/resources/lennys-library)** by Kas Eelman - Leveraging transcripts to provide additional insight in to the product competency assessment for Radia users with citations, meta-data and the original episodes.
+
+**[Lenny for Claude](https://github.com/arjunlall/lenny-for-claude)** by [Arjun Lall](https://x.com/_arjun) - MCP server that surfaces podcast advice inside Claude Code and Claude Desktop. Includes /lenny slash command and optional plan mode hook.
+
+**[Lennyhub RAG](https://github.com/traversaal-ai/lennyhub-rag)** by Hamza Farooq - A production grade knowledge graph RAG, enabling multi-turn questions 
+
+**[Lenny Ideation Constellation & Search](https://lennys-search.vercel.app/)** - A semantic search engine and idea explorer for Lenny's Podcast. Find exactly what the guests said, or visually discover how their ideas connect, cluster, and contradict across episodes.
+
+**[LennySan RAG-o-Matic](https://github.com/deanpeters/lennysan-rag-o-matic)** by Dean Peters - A low-barrier, learn-by-building PM pm research tool for exploring Lenny Rachitsky's 320+ podcast episodes using AI and RAG from the CLI, with future support for Jupyter notebooks, time-series exploration, and more.
+
+**[Ask Lenny](https://ask-lenny.vercel.app/)** by Prayerson Christian - AI research assistant that answers questions using real quotes from Lenny's podcast.
+
+**[Lenny's Wisdom Wall](https://lennys-wisdom-wall.vercel.app)** by Shrikant Kadu - An interactive exploration featuring interesting insights and curated contradictions from Lenny's podcast guests.
+
+**[Time Capsule](https://sameerbajaj.com/tools/timecapsule)** by [@sameerbajaj](https://x.com/sameerbajaj) - Describe your situation and get a personalized letter with advice from product leaders who were in your exact moment.
+
+**[Lenny's Experts](https://www.expertand.com/lenny)** by [@joeyh](https://twitter.com/joeyh) - Make Lenny's guests your personal expert network. Browse by topic, save what resonates, come back to it later.
+
+**[Lenny's Podcast on Pod Recs](https://rave.us/pod-recs)** by Pod Recs - Browse and save all the things recommended on Lenny's Podcast. Books, films, products... it's all there (and normalised!)
+
+**[Lenny Antimemes](https://lenny.antimeme.co)** by [@antimemetic_](https://x.com/antimemetic_) - An antimeme is an idea that resists spreading despite being important. The guests on Lenny's podcast have internalized them anyway - that's part of what makes them outliers. This surfaces those insights.
+
+**[Lenny's Knowledge Graph](https://lennysgraph.vercel.app/)** by [Eze Actis Grosso](https://www.linkedin.com/in/fractionaltech/) - Explore concepts, frameworks, guests, and books across 330+ episodes. Find connections, ask questions, and get answers with the exact episode and timestamp—click straight to that moment on YouTube.
 
 Have you built something with these transcripts? Open a PR to add your project to this list!
 
