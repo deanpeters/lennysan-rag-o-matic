@@ -74,6 +74,10 @@ Here’s the “what changed” plus the “why you, a PM, should care.”
   **What:** Save what happened during a run — settings, retrieval decisions, errors — to a `logs/` directory.
   **Why you care:** Debugging stops being séance work. You can explain behavior, reproduce issues, and learn faster.
 
+- **v1.6: Topic organization**
+  **What:** Curated paths through the corpus by theme — pricing, growth, hiring, AI, leadership. Each topic is a structured entry point into the most relevant episodes, not just a keyword search.
+  **Why you care:** You stop re-discovering the same episodes and start building repeatable research journeys. Topics are the difference between a search engine and a curriculum.
+
 - **v2.0: Productside corpus + cross-corpus Dean-i-fried**
   **What:** Add Productside as a second named corpus (experienced PMs coaching and teaching great product management). Query either corpus alone or both together. When querying both: each answers independently, then Dean-i-fried synthesizes the collision into one punchy take. Design doc: `deannotes/MULTI-CORPUS-VISION.md`.
   **Why you care:** Practitioners telling stories vs. experienced PMs coaching craft — that’s not the same angle twice. Dean-i-fried finds the collision between them and turns it into something no single-corpus tool can produce.

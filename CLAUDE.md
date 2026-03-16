@@ -242,6 +242,11 @@ lennysan-rag-o-matic/
 - Add logs/ output for explore.py runs (system messages + errors)
 - Single feature: troubleshooting logs like index_*.log
 
+**v1.6 - Topic Organization**
+- Curated paths through the corpus by theme (pricing, growth, hiring, AI, leadership)
+- Each topic is a structured entry point into the most relevant episodes
+- Single feature: repeatable research journeys, not just keyword search
+
 **v2.0 - Productside Corpus + Cross-Corpus Dean-i-fried**
 - Add Productside as a second named corpus (experienced PMs coaching and teaching great product management)
 - Query either corpus alone or both together
