@@ -6,8 +6,8 @@ Two distinct expert knowledge bases. One synthesis layer.
 
 - **Lenny corpus** — practitioners sharing it live. Founders, PMs, and operators in
   conversation with Lenny, working through hard-won lessons from building real products.
-- **Productside corpus** — practitioners who've done it and are now teaching it.
-  Experienced PMs and product leaders turning field experience into structured curriculum.
+- **Productside corpus** — experienced product managers now coaching and teaching
+  great product management.
 
 Each corpus stays sovereign. You can query either one alone. But the real power
 is querying both and letting Dean-i-fried blend the practitioner voice with the
@@ -24,8 +24,8 @@ and what's the Deanified collision between the two?"
 | | Lenny Corpus | Productside Corpus |
 |---|---|---|
 | Source | Lenny's Podcast (YouTube) | Productside webinars (YouTube) |
-| Voice | Practitioner in conversation — messy, specific, earned | Practitioner-turned-teacher — structured, transferable, field-tested |
-| Content | Guest stories, decisions, war stories | Frameworks, models, PM skill-building grounded in real experience |
+| Voice | Practitioner in conversation — messy, specific, earned | Experienced PMs coaching and teaching — grounded, transferable, craft-focused |
+| Content | Guest stories, decisions, war stories | PM coaching, frameworks, and skill-building from people who've lived it |
 | Slug style | Guest-based (`brian-chesky/`) | Topic-based (`discovery-frameworks/`) |
 | Metadata | Guest, title, date, YouTube URL | Topic, speaker, date, YouTube URL |
 
@@ -179,9 +179,9 @@ This collapses and supersedes several roadmap items:
 ## Why This Matters
 
 Most RAG tools are single-source lookup engines.
-This becomes a **comparative knowledge platform** — practitioner in conversation
-vs practitioner-turned-teacher, story vs structured model, earned lesson vs
-taught framework. Both sides have done the work. The difference is the lens.
+This becomes a **comparative knowledge platform** — practitioners telling their
+stories vs experienced PMs coaching and teaching great product management.
+Both sides have done the work. The difference is the mode: conversation vs craft.
 
 Dean-i-fried is the synthesis that no one else has.
 Not because the technology is novel, but because the collision is deliberate.
